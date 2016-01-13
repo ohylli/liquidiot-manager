@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) TUT Tampere University of Technology 2015-2016
+ * All rights reserved.
+ *
+ * Main author(s):
+ * Farshad Ahmadi Ghohandizi <farshad.ahmadi.gh@gmail.com>
+ * Otto Hylli <>
+ */
+
 var express = require('express');
 var router = express.Router();
 
