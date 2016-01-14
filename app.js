@@ -4,7 +4,7 @@
  *
  * Main author(s):
  * Farshad Ahmadi Ghohandizi <farshad.ahmadi.gh@gmail.com>
- * Otto Hylli <>
+ * Otto Hylli <otto.hylli@tut.fi>
  */
 
 var express = require('express');
