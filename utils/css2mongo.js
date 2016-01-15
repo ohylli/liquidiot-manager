@@ -1,4 +1,13 @@
 /**
+ * Copyright (c) TUT Tampere University of Technology 2015-2016
+ * All rights reserved.
+ *
+ * Main author(s):
+ * Antti Nieminen <antti.h.nieminen@tut.fi>
+ */
+
+
+/**
     var css2mongo = require('css2mongo');
 
     css2mongo('.foo.bar[xxx="yyy"], #AAA');
