@@ -8,16 +8,29 @@
  */
 
 var express = require('express');
+var css2mongo = require( '../utils/css2mongo' );
 var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res) {
     var db = req.db;
-    //var f = req.query.functionality || "";
-    //var functionalities = f.split(',');
-    //db.collection('device').find({"connected-devices": {tempSensor: {$exists:true}}}).toArray(function(err, items){
+    var dbQuery = {};
+    // if the request has a query parameter containing a device selector string
+    // parse it into a mongodb query
+    if ( req.query.q ) {
+       try {
+          dbQuery = css2mongo( req.query.q );
+       }
+       
+       catch ( error ) {
+          res.status( 400 ).send( { 'message': 'selector query parsing failed: ' +error } );
+          return;
+       }
+       
+       console.log( dbQuery );
+   }
 
-    db.collection('device').find({}).toArray(function(err, items){
+    db.collection('device').find( dbQuery ).toArray(function(err, items){
         if(err){
             res.status(400).send(err.toString());
         } else {
