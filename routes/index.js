@@ -10,6 +10,7 @@
 var express = require('express');
 var css2mongo = require( '../utils/css2mongo' );
 var router = express.Router();
+var _ = require( 'lodash' );
 
 // Gets the list of devices.
 // can be filtered with a device selector string as a query parameter named q
@@ -40,9 +41,35 @@ router.get('/', function(req, res) {
     });
 });
 
+// add a device
 router.post('/', function(req, res){
     var db = req.db;
     console.log(typeof(req.body) + " : " + JSON.stringify(req.body));
+    var device = req.body;
+    device.classes = []; // an array for device classes
+    
+    // go through the connected devices if any and add
+    // classes that correspond to the device type e.g. if device has a speaker
+    // add clas canPlaySound.
+    // also add connected device's information as attributes
+    // for example if speaker has a model adds that as an attribute named speaker-model
+    if ( device['connected-devices'] ) {
+       _.each( device['connected-devices'], function ( deviceAttrs, deviceType ) {
+          // contains the mapping information between device types and classes
+          var deviceType2class = {
+             speaker: 'canPlaySound',
+             'temp-sensor': 'canMeasureTemperature'
+          };
+          
+          if ( deviceType2class[deviceType] ) {
+             device.classes.push( deviceType2class[deviceType] );
+             _.each( deviceAttrs, function ( value, deviceAttrName ) {
+                device[ deviceType +'-' +deviceAttrName ] = value;
+             });
+          }
+       });
+    }
+    
     db.collection('device').insert(req.body, function(err, result){
         if(err){
             res.status(400).send(err.toString());
