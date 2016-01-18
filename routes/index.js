@@ -11,7 +11,8 @@ var express = require('express');
 var css2mongo = require( '../utils/css2mongo' );
 var router = express.Router();
 
-/* GET home page. */
+// Gets the list of devices.
+// can be filtered with a device selector string as a query parameter named q
 router.get('/', function(req, res) {
     var db = req.db;
     var dbQuery = {};
