@@ -80,7 +80,9 @@ function exprToMongoQuery(expr) {
     and.push(attributesToMongoQuery(part.attributes));
   }
 
-  // TODO: pseudo classes
+  if (part.pseudos) {
+    and.push(pseudosToMongoQuery(part.pseudos));
+  }
 
   if (and.length === 1) {
     return and[0];
@@ -121,6 +123,21 @@ function attrToMongoQuery(attr) {
     throw "Unknown operator: " + attr.operator;
   }
   return q;
+}
+
+function pseudosToMongoQuery(pseudos) {
+  if (pseudos.length === 1) {
+    return pseudoToMongoQuery(pseudos[0]);
+  }
+  return {$and: pseudos.map(pseudoToMongoQuery)};
+}
+
+function pseudoToMongoQuery(pseudo) {
+  if (pseudo.name === 'not' && pseudo.value) {
+    return {$not: cssToMongoQuery(pseudo.value) };
+  }
+  // TODO: other pseudo classes
+  throw "Unknown pseudo: " + pseudo.name;
 }
 
 module.exports = cssToMongoQuery;
