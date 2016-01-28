@@ -44,6 +44,9 @@ function cssToMongoQuery(css) {
     css = slick.parse(css);
   }
 
+  if (css.length === 0) {
+    return {};
+  }
   if (css.length === 1) {
     return exprToMongoQuery(css[0]);
   }
@@ -84,6 +87,9 @@ function exprToMongoQuery(expr) {
     and.push(pseudosToMongoQuery(part.pseudos));
   }
 
+  if (and.length === 0) {
+    return {};
+  }
   if (and.length === 1) {
     return and[0];
   }
