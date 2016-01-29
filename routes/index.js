@@ -11,6 +11,8 @@ var express = require('express');
 var css2mongo = require( '../utils/css2mongo' );
 var router = express.Router();
 var _ = require( 'lodash' );
+var mongo = require( 'mongoskin' );
+var toObjectID = mongo.helper.toObjectID;
 
 // Gets the list of devices.
 // can be filtered with a device selector string as a query parameter named q
@@ -89,6 +91,29 @@ router.get('/id/:id', function(req, res){
             console.log(typeof(item) + " : " + item);
             res.status(200).send(JSON.stringify(item));
         } 
+    });
+});
+
+router.post( '/:id/aps', function ( req, res ) {
+    var db = req.db;
+    var query = { '_id': toObjectID( req.params.id ) };
+    var update = { '$push': { 'apps': req.body } };
+    var options = { returnOriginal: false };
+    db.collection( 'device' ).findOneAndUpdate( query, update, options, function ( err, result ) {
+        if ( err ) {
+            res.status( 500 ).send( err );
+            return;
+        }
+        
+        if ( result.lastErrorObject.n == 0 ) {
+            return res.status( 404).send( { 'message': 'Device with id ' +req.params.id +' not found.' } );
+        }
+        
+        if ( !result.lastErrorObject.updatedExisting ) {
+            return res.status( 500 ).send( { 'message': 'Device found but update failed.' } );
+        }
+        
+        res.send( result.value );
     });
 });
 
