@@ -140,7 +140,8 @@ function pseudosToMongoQuery(pseudos) {
 
 function pseudoToMongoQuery(pseudo) {
   if (pseudo.name === 'not' && pseudo.value) {
-    return {$not: cssToMongoQuery(pseudo.value) };
+    // http://stackoverflow.com/a/32972463
+    return {$nor: [cssToMongoQuery(pseudo.value)]};
   }
   // TODO: other pseudo classes
   throw "Unknown pseudo: " + pseudo.name;
