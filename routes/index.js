@@ -118,7 +118,7 @@ router.post( '/:id/apps', function ( req, res ) {
     });
 });
 
-// deletes the app with the given id from the device list of the specified device
+// deletes the app with the given id from the app list of the specified device
 router.delete( '/:devid/apps/:appid', function ( req, res ) {
     var db = req.db;
     var query = { '_id': toObjectID( req.params.devid ), 'apps.id': req.params.appid };
@@ -130,7 +130,6 @@ router.delete( '/:devid/apps/:appid', function ( req, res ) {
             return;
         }
         
-        console.log( result );
         if ( result.lastErrorObject.n == 0 ) {
             return res.status( 404).send( { 'message': 'App with id ' +req.params.appid +' in device with id ' +req.params.devid +' not found.' } );
         }
