@@ -30,10 +30,22 @@ router.get('/', function(req, res) {
           res.status( 400 ).send( { 'message': 'selector query parsing failed: ' +error } );
           return;
        }
-       
-       console.log( dbQuery );
    }
-
+   
+   if ( req.query.app ) {
+       try {
+          var appQuery = css2mongo( req.query.app );
+          dbQuery.apps = { $elemMatch: appQuery };
+       }
+       
+       catch ( error ) {
+          res.status( 400 ).send( { 'message': 'selector query parsing failed: ' +error } );
+          return;
+       }
+       
+       console.log( JSON.stringify( dbQuery ));
+   }
+   
     db.collection('device').find( dbQuery ).toArray(function(err, items){
         if(err){
             res.status(400).send(err.toString());
