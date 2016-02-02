@@ -146,8 +146,8 @@ router.post( '/:id/apps', function ( req, res ) {
 // deletes the app with the given id from the app list of the specified device
 router.delete( '/:devid/apps/:appid', function ( req, res ) {
     var db = req.db;
-    var query = { '_id': toObjectID( req.params.devid ), 'apps.id': req.params.appid };
-    var update = { '$pull': { 'apps': { 'id': req.params.appid } } };
+    var query = { '_id': toObjectID( req.params.devid ), 'apps.id': Number( req.params.appid ) };
+    var update = { '$pull': { 'apps': { 'id': Number( req.params.appid ) } } };
     var options = { returnOriginal: false };
     db.collection( 'device' ).findOneAndUpdate( query, update, options, function ( err, result ) {
         if ( err ) {
