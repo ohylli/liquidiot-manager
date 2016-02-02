@@ -8,6 +8,7 @@
  */
 
 var express = require('express');
+var sift = require( 'sift' );
 var css2mongo = require( '../utils/css2mongo' );
 var router = express.Router();
 var _ = require( 'lodash' );
@@ -18,28 +19,32 @@ var toObjectID = mongo.helper.toObjectID;
 // can be filtered with a device selector string as a query parameter named q
 router.get('/', function(req, res) {
     var db = req.db;
-    var dbQuery = {};
+    var devQuery = req.query.device || req.query.q;
+    var dbQuery = {}; // mongo db query for getting the devices
     // if the request has a query parameter containing a device selector string
     // parse it into a mongodb query
-    if ( req.query.q ) {
+    if ( devQuery ) {
        try {
-          dbQuery = css2mongo( req.query.q );
+          dbQuery = css2mongo( devQuery );
        }
        
        catch ( error ) {
-          res.status( 400 ).send( { 'message': 'selector query parsing failed: ' +error } );
+          res.status( 400 ).send( { 'message': 'device selector query parsing failed: ' +error } );
           return;
        }
    }
    
+   var appQuery = null; // app specific query part of the mongodb query for devices
+   // if we have an app query selector parse it in to mongodb query
    if ( req.query.app ) {
        try {
-          var appQuery = css2mongo( req.query.app );
+          appQuery = css2mongo( req.query.app );
+          // add the app query as an elemmath query
           dbQuery.apps = { $elemMatch: appQuery };
        }
        
        catch ( error ) {
-          res.status( 400 ).send( { 'message': 'selector query parsing failed: ' +error } );
+          res.status( 400 ).send( { 'message': 'app selector query parsing failed: ' +error } );
           return;
        }
        
@@ -50,6 +55,14 @@ router.get('/', function(req, res) {
         if(err){
             res.status(400).send(err.toString());
         } else {
+            // if we had an app query for each device add a new attribute to the returned document
+            // that will contain only those apps that matched the query
+            if ( appQuery ) {
+                _.each( items, function ( device ) {
+                    device.matchedApps = sift( appQuery, device.apps );
+                });
+            }
+            
             res.status(200).send(JSON.stringify(items));
         }
     });
