@@ -167,6 +167,29 @@ router.delete( '/:devid/apps/:appid', function ( req, res ) {
     });
 });
 
+router.put( '/:devid/apps/:appid', function ( req, res ) {
+    var db = req.db;
+    var query = { '_id': toObjectID( req.params.devid ), 'apps.id': Number( req.params.appid ) };
+    var update = { '$set': { 'apps.$': req.body } };
+    var options = { returnOriginal: false };
+    db.collection( 'device' ).findOneAndUpdate( query, update, options, function ( err, result ) {
+        if ( err ) {
+            res.status( 500 ).send( err );
+            return;
+        }
+        
+        if ( result.lastErrorObject.n == 0 ) {
+            return res.status( 404).send( { 'message': 'App with id ' +req.params.appid +' in device with id ' +req.params.devid +' not found.' } );
+        }
+        
+        if ( !result.lastErrorObject.updatedExisting ) {
+            return res.status( 500 ).send( { 'message': 'Device found but update failed.' } );
+        }
+        
+        res.send( result.value );
+    });
+});
+
 router.get("/functionality?", function(req, res){
     var db = req.db;
     var tempSensor = req.query.tempSensor;
