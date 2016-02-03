@@ -30,7 +30,7 @@
           ]
         },
         {
-          "id": "AAA"
+          "_id": "AAA"
         }
       ]
     }
@@ -38,6 +38,7 @@
 */
 
 var slick = require('slick');
+var mongo = require('mongoskin');
 
 function cssToMongoQuery(css) {
   if (typeof css === 'string') {
@@ -104,7 +105,15 @@ function classesToMongoQuery(classes) {
 }
 
 function idToMongoQuery(id) {
-  return {id: id};
+  try {
+    id = new mongo.ObjectId(id);
+  }
+  catch(e) {
+    // id was not a valid MongoDB ObjectId
+    // Let's use the id as is.
+    // (The query will most likely return empty...)
+  }
+  return {_id: id};
 }
 
 function tagToMongoQuery(tag) {
