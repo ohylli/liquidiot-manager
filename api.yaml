@@ -1,0 +1,95 @@
+swagger: '2.0'
+info:
+  title: LiquidIoT DM APIs
+  version: 0.0.1
+produces:
+  - application/json
+consumes:
+  - application/json
+paths:
+  /apis:
+    get:
+      summary: Array of class names that have an API description
+      responses:
+        '200':
+          description: Array of classnames
+          schema:
+            type: array
+            items:
+              type: string
+  /apis/{className}:
+    get:
+      summary: API description of the class
+      parameters:
+        - name: className
+          description: Name of the class
+          in: path
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Swagger fragment
+          schema:
+            $ref: '#/definitions/swaggerFragment'
+    put:
+      summary: Create or replace the API description
+      parameters:
+        - name: className
+          description: Name of the class
+          in: path
+          required: true
+          type: string
+        - name: api
+          description: Name of the class
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/swaggerFragment'
+      responses:
+        '200':
+          description: Swagger fragment
+          schema:
+            $ref: '#/definitions/swaggerFragment'
+    delete:
+      summary: Delete the API description
+      parameters:
+        - name: className
+          description: Name of the class
+          in: path
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Swagger fragment
+          schema:
+            $ref: '#/definitions/swaggerFragment'
+  /devices/{deviceId}/apps/{appId}/api:
+    get:
+      summary: Swagger API description of the application
+      description: The API description combines the Swagger fragments of all the classes of the application. It also contains the host and basePath of the currently running application.
+      parameters:
+        - name: deviceId
+          description: Device ID
+          in: path
+          required: true
+          type: string
+        - name: appId
+          description: Application ID
+          in: path
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Full Swagger description
+          schema:
+            $ref: '#/definitions/swaggerDescription'
+
+definitions:
+  swaggerFragment:
+    type: object
+    description: Swagger API description excluding host, basePath, and schemes
+  swaggerDescription:
+    type: object
+    description: Swagger API description
+
+
