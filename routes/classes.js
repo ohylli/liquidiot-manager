@@ -31,4 +31,24 @@ router.put( "/:class", function( req, res ) {
     });
 });
 
+// deletes a class api description
+router.delete( '/:class', function ( req, res ) {
+    var db = req.db;
+    var query = { name: req.params.class };
+    db.collection( 'classes' ).findOneAndDelete( query, function ( err, result ) {
+        if ( err ) {
+            return res.status( 500 ).send( err );
+        }
+        
+        if ( result.lastErrorObject.n == 0 ) {        
+            return res.status( 404 ).send( { 'message': 'class named ' +req.params.class +' not found.' } );
+        }
+        
+        // set content type because we are sending just a string
+        res.type( 'json' );
+        res.send( result.value.api  );
+    });
+    
+});
+
 module.exports = router;
