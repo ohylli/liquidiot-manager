@@ -24,6 +24,24 @@ router.get( '/', function ( req, res ) {
     });
 });
 
+// get the api description of a class
+router.get( '/:class', function( req, res ) {
+    var db = req.db;
+    var query = { name: req.params.class };
+    db.collection( 'classes' ).findOne( query, function ( err, result ) {
+        if ( err ) {
+            return res.status( 500 ).send( err );
+        }
+        
+        if ( result == null ) {
+            return res.status( 404 ).send( { 'message': 'class named ' +req.params.class +' not found.' } );
+        }
+        
+        res.type( 'json' );
+        res.send( result.api );
+    });
+});
+
 // create or update a class api description
 router.put( "/:class", function( req, res ) {
     var db = req.db;
