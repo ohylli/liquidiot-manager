@@ -10,16 +10,33 @@ var express = require( 'express' );
 
 var router = express.Router();
 
+// gets the names of the classes
 router.get( '/', function ( req, res ) {
-    res.send( { message: 'joo' } );
+    var db = req.db;
+    // get only name and description
+    var project = { name: 1, description: 1, '_id': 0  };
+    db.collection( 'classes' ).find({}).project( project ).toArray( function ( err, docs ) {
+        if ( err ) {
+            return res.status( 500 ).send( err );
+        }
+        
+        res.send( docs );
+    });
 });
 
 // create or update a class api description
 router.put( "/:class", function( req, res ) {
     var db = req.db;
     var query = { 'name': req.params.class };
+    
+    // try to get a description from the api specification
+    var description = '';
+    if ( req.body.info && req.body.info.description ) {
+        description = req.body.info.description;
+    }
+    
     // object to be added
-    var api = { name: req.params.class, api: JSON.stringify( req.body ) };
+    var api = { name: req.params.class, description: description, api: JSON.stringify( req.body ) };
     // option for inserting a document if none match query
     var options = { upsert: true };
     db.collection( 'classes' ).updateOne( query, api, options, function ( err, result ) { 
