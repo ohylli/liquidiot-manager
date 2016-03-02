@@ -228,10 +228,27 @@ router.get( '/:devid/apps/:appid/api', function ( req, res ) {
                 return res.status( 404 ).send( { message: 'The app references classes that do not exist.' } );
             }
             
-            res.send( classes );
+            var api = buildApiDesc( device, app, classes );
+            res.send( api );
         });
     });
 });
+
+function buildApiDesc( device, app, classes ) {
+    var api = {};
+    var apis = classes.map( function ( item ) {
+        return JSON.parse( item.api );
+    });
+    
+    _.merge.apply( null, [ api ].concat( apis ) );
+    api.info = {};
+    api.swagger = "2.0";
+    api.info.title = app.name;
+    api.info.description = app.description;
+    api.host = device.url;
+    api.basePath = app.id +'/';
+    return api;
+}
 
 router.get("/functionality?", function(req, res){
     var db = req.db;
