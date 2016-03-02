@@ -218,7 +218,18 @@ router.get( '/:devid/apps/:appid/api', function ( req, res ) {
             return res.status( 404 ).send( { message: 'Device with id ' +devid +' does not have an app with id ' +appid } );
         }
         
-        res.send( app );
+        var query = { name: { $in: app.classes } };
+        db.collection( 'classes' ).find( query ).toArray( function ( err, classes ) {
+            if ( err ) {
+                return res.status( 500 ).send( err );
+            }
+            
+            if ( classes.length != app.classes.length ) {
+                return res.status( 404 ).send( { message: 'The app references classes that do not exist.' } );
+            }
+            
+            res.send( classes );
+        });
     });
 });
 
