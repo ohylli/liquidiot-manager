@@ -190,6 +190,38 @@ router.put( '/:devid/apps/:appid', function ( req, res ) {
     });
 });
 
+router.get( '/:devid/apps/:appid/api', function ( req, res ) {
+    var db = req.db;
+    var devid = req.params.devid;
+    var appid = req.params.appid;
+    db.collection( 'device' ).findById(  devid, function ( err, device ) {
+        if ( err ) {
+            return res.status( 500 ).send( err );
+        }
+        
+        if ( device == null ) {
+            return res.status( 404 ).send( { 'message': 'Device with id ' +devid +' not found.' } );
+        }
+        
+        if ( device.apps == undefined ) {
+            return res.status( 404 ).send( { message: 'Device with id ' +devid +' does not have an app with id ' +appid } );
+        }
+        
+        var app = null;
+        device.apps.forEach( function ( item ) {
+            if ( item.id == appid ) {
+                app = item;
+            }
+        });
+        
+        if ( app == null ) {
+            return res.status( 404 ).send( { message: 'Device with id ' +devid +' does not have an app with id ' +appid } );
+        }
+        
+        res.send( app );
+    });
+});
+
 router.get("/functionality?", function(req, res){
     var db = req.db;
     var tempSensor = req.query.tempSensor;
