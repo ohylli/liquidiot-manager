@@ -190,10 +190,12 @@ router.put( '/:devid/apps/:appid', function ( req, res ) {
     });
 });
 
+// get a api description for an app running on a device
 router.get( '/:devid/apps/:appid/api', function ( req, res ) {
     var db = req.db;
     var devid = req.params.devid;
     var appid = req.params.appid;
+    // first find the device
     db.collection( 'device' ).findById(  devid, function ( err, device ) {
         if ( err ) {
             return res.status( 500 ).send( err );
@@ -203,10 +205,12 @@ router.get( '/:devid/apps/:appid/api', function ( req, res ) {
             return res.status( 404 ).send( { 'message': 'Device with id ' +devid +' not found.' } );
         }
         
+        // does the device even have apps
         if ( device.apps == undefined ) {
             return res.status( 404 ).send( { message: 'Device with id ' +devid +' does not have an app with id ' +appid } );
         }
         
+        // find the app with the given id
         var app = null;
         device.apps.forEach( function ( item ) {
             if ( item.id == appid ) {
@@ -218,12 +222,14 @@ router.get( '/:devid/apps/:appid/api', function ( req, res ) {
             return res.status( 404 ).send( { message: 'Device with id ' +devid +' does not have an app with id ' +appid } );
         }
         
+        // get the class api descriptions the app refers to
         var query = { name: { $in: app.classes } };
         db.collection( 'classes' ).find( query ).toArray( function ( err, classes ) {
             if ( err ) {
                 return res.status( 500 ).send( err );
             }
             
+            // we should have all of the classes the app refers to
             if ( classes.length != app.classes.length ) {
                 return res.status( 404 ).send( { message: 'The app references classes that do not exist.' } );
             }
@@ -234,19 +240,26 @@ router.get( '/:devid/apps/:appid/api', function ( req, res ) {
     });
 });
 
+// builds a api description for the given app, running on the device from the array of classes
 function buildApiDesc( device, app, classes ) {
-    var api = {};
+    var api = {}; // build the combined description to this object
+    // get only the api descriptions into an array as objects
     var apis = classes.map( function ( item ) {
         return JSON.parse( item.api );
     });
     
+    // now just merge the objects, may be needs additionanl functionality
+    // the merge method has another version that also takes a custom function used in merging so this can be customized if required
+    // have to use apply merge takes one named argument and variable number after that
+    // the first is the target and the rest will be merged to that
     _.merge.apply( null, [ api ].concat( apis ) );
+    // add additional information
     api.info = {};
     api.swagger = "2.0";
     api.info.title = app.name;
     api.info.description = app.description;
     api.host = device.url;
-    api.basePath = app.id +'/';
+    api.basePath = app.id +'/'; // not sure what this should be
     return api;
 }
 

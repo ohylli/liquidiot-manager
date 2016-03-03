@@ -6,11 +6,13 @@
  * Otto Hylli <otto.hylli@tut.fi>
 */
 
+// manages classes and their api descriptions
+
 var express = require( 'express' );
 
 var router = express.Router();
 
-// gets the names of the classes
+// gets the names and descriptions of the classes
 router.get( '/', function ( req, res ) {
     var db = req.db;
     // get only name and description
@@ -37,6 +39,7 @@ router.get( '/:class', function( req, res ) {
             return res.status( 404 ).send( { 'message': 'class named ' +req.params.class +' not found.' } );
         }
         
+        // have to set this because response body is only a string
         res.type( 'json' );
         res.send( result.api );
     });
