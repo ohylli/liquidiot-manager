@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   title: LiquidIoT DM APIs
-  version: 0.0.1
+  version: "0.2"
 produces:
   - application/json
 consumes:
@@ -9,14 +9,19 @@ consumes:
 paths:
   /apis:
     get:
-      summary: Array of class names that have an API description
+      summary: Array of names and short descriptions of classes that have an API description
       responses:
         '200':
-          description: Array of classnames
+          description: Array of class names and descriptions
           schema:
             type: array
             items:
-              type: string
+              type: object
+              properties:
+                  name:
+                      type: string
+                  description:
+                      type: string
   /apis/{className}:
     get:
       summary: API description of the class
@@ -31,6 +36,14 @@ paths:
           description: Swagger fragment
           schema:
             $ref: '#/definitions/swaggerFragment'
+        '404':
+            description: class not found
+            schema:
+                $ref: "#/definitions/error404"
+        '500':
+            description: "server error"
+            schema:
+                $ref: "#/definitions/error500"
     put:
       summary: Create or replace the API description
       parameters:
@@ -50,6 +63,10 @@ paths:
           description: Swagger fragment
           schema:
             $ref: '#/definitions/swaggerFragment'
+        '500':
+            description: "server error"
+            schema:
+                $ref: "#/definitions/error500"
     delete:
       summary: Delete the API description
       parameters:
@@ -63,6 +80,14 @@ paths:
           description: Swagger fragment
           schema:
             $ref: '#/definitions/swaggerFragment'
+        '404':
+            description: class not found
+            schema:
+                $ref: "#/definitions/error404"
+        '500':
+            description: "server error"
+            schema:
+                $ref: "#/definitions/error500"
   /devices/{deviceId}/apps/{appId}/api:
     get:
       summary: Swagger API description of the application
@@ -83,6 +108,14 @@ paths:
           description: Full Swagger description
           schema:
             $ref: '#/definitions/swaggerDescription'
+        '404':
+            description: device, app or classes the app refers to  not found
+            schema:
+                $ref: "#/definitions/error404"
+        '500':
+            description: "server error"
+            schema:
+                $ref: "#/definitions/error500"
 
 definitions:
   swaggerFragment:
@@ -91,5 +124,12 @@ definitions:
   swaggerDescription:
     type: object
     description: Swagger API description
-
-
+  error404:
+      description: error message
+      type: object
+      properties:
+          message:
+              type: string
+  error500:
+      description: error message
+      type: object
