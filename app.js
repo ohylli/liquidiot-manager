@@ -69,6 +69,7 @@ app.use(function(req, res, next){
 
 app.use('/', devices );
 app.use( '/apis', classes );
+app.use('/devices', devices );
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
