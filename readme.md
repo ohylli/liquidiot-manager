@@ -20,4 +20,6 @@ This project is a nodejs application that uses MongoDB as a database:
 
 4- Optional change the MongoDB url the application connects to. By default it is mongodb://localhost/dms. To change it, set the value of an environment variable called mongourl to your MongoDB URL.
 
-5- Run the project. 'npm start'
+5- Optional change the TCP port the server will listen on by setting the environment variable PORT. By default the server listens on port 3000.
+
+6- Run the project. 'npm start'
