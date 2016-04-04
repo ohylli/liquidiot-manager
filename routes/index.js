@@ -259,7 +259,7 @@ function buildApiDesc( device, app, classes ) {
     api.info.title = app.name;
     api.info.description = app.description;
     api.host = device.url;
-    api.basePath = app.id +'/'; // not sure what this should be
+    api.basePath = 'app/' +app.id +'/api';
     return api;
 }
 
