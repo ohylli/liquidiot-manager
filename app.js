@@ -23,6 +23,7 @@ var db = mongo.db( mongoURL, {native_parser:true});
 
 var devices = require('./routes/index');
 var classes = require( './routes/classes' );
+var mashup = require( './routes/mashup' );
 
 var app = express();
 
@@ -70,6 +71,7 @@ app.use(function(req, res, next){
 app.use('/', devices );
 app.use( '/apis', classes );
 app.use('/devices', devices );
+app.use( '/mashups', mashup );
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
