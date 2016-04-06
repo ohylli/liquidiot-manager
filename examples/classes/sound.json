@@ -1,0 +1,40 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "the application can make a sound",
+        "version": "1.0.0",
+        "title": "makesSound"
+    },
+    "paths": {
+        "/sound": {
+            "post": {
+                "tags": [
+                    "sound"
+                ],
+                "description": "makes a sound",
+                "operationId": "makeSound",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "status message",
+                        "schema": {
+                            "$ref": "#/definitions/soundStatus"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "soundStatus": {
+            "properties": {
+                "status": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

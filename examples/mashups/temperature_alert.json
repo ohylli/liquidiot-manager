@@ -1,0 +1,36 @@
+{
+  "name": "temperatureAlert",
+  "description": "Alerts when temperature is over 27",
+  "apps": [
+    "http://130.230.142.101:3001/devices/56ebc69bd501e1db2f0aa006/apps/295546/api",
+    "http://130.230.142.101:3001/devices/56d6c602d501e1db2f0aa004/apps/767831/api"
+  ],
+  "variables": {
+    "temperature": {
+      "type": "Number"
+    }
+  },
+  "components": [
+    {
+      "type": "operation",
+      "app": "http://130.230.142.101:3001/devices/56d6c602d501e1db2f0aa004/apps/767831/api",
+      "output": "temperature",
+      "tag": "temperature",
+      "operationId": "temperatureGET"
+    },
+    {
+      "type": "if",
+      "operand": ">",
+      "input1": "temperature",
+      "value": 23,
+      "then": [
+        {
+          "type": "operation",
+          "app": "http://130.230.142.101:3001/devices/56ebc69bd501e1db2f0aa006/apps/295546/api",
+          "tag": "sound",
+          "operationId": "makeSound"
+        }
+      ]
+    }
+  ]
+}

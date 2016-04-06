@@ -1,0 +1,37 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "0.1.0",
+        "title": "measuresTemperature",
+        "description": "can give a temperature measurement"
+    },
+    "paths": {
+        "/temperature": {
+            "get": {
+                "description": "Gets temperature.",
+                "tags": [
+                    "temperature"
+                ],
+                "operationId": "temperatureGET",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "temperature measurement",
+                        "schema": {
+                            "$ref": "#/definitions/measurement"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "measurement": {
+            "properties": {
+                "temperature": {
+                    "type": "number"
+                }
+            }
+        }
+    }
+}
