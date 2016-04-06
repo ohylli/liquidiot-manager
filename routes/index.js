@@ -63,7 +63,7 @@ router.get('/', function(req, res) {
                 });
             }
             
-            res.status(200).send(JSON.stringify(items));
+            res.status(200).send( items );
         }
     });
 });
