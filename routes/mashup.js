@@ -128,6 +128,7 @@ function executeMashup( mashup, done ) {
 
             else {
                 console.log( 'condition not ok' );
+                callback();
             }
         }
 
