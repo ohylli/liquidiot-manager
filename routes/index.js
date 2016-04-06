@@ -7,6 +7,7 @@
  * Otto Hylli <otto.hylli@tut.fi>
  */
 
+var url = require( 'url' ); 
 var express = require('express');
 var sift = require( 'sift' );
 var css2mongo = require( '../utils/css2mongo' );
@@ -258,8 +259,8 @@ function buildApiDesc( device, app, classes ) {
     api.swagger = "2.0";
     api.info.title = app.name;
     api.info.description = app.description;
-    api.host = device.url;
-    api.basePath = 'app/' +app.id +'/api';
+    api.host = url.parse( device.url ).host;
+    api.basePath = '/app/' +app.id +'/api';
     return api;
 }
 
