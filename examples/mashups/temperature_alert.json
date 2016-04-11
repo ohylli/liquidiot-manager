@@ -20,9 +20,9 @@
     },
     {
       "type": "if",
-      "operand": ">",
+      "operator": ">",
       "input1": "temperature",
-      "value": 23,
+      "value": 20,
       "then": [
         {
           "type": "operation",

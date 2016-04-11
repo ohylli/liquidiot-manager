@@ -8,14 +8,18 @@
 
 var express = require( 'express' );
 var Swagger = require( 'swagger-client' );
+var _ = require( 'lodash' );
 
 var router = express.Router();
+
+// permitted operations in comparisons
+var comparisonOperators = [ '<', '>', '==', '>=', '<=', '!=' ];
 
 // executes the mashup send in the post request body
 router.post( '/', function( req, res ) {
     executeMashup( req.body, function ( err ) {
         if ( err ) {
-            return res.status( 400 ).send( err );
+            return res.status( 400 ).send( { 'message': err.message } );
         }
         
         var result = { status: 'ok' };
@@ -118,9 +122,11 @@ function executeMashup( mashup, done ) {
         // not really a good solution, but works in this proof of concept
         var input = mashup.variables[condition.input1].value;
         var value = input[Object.keys( input )[0]];
-        console.log( 'condition ' +value +condition.operand +condition.value );
-        if ( condition.operand === '>' ) {
-            if ( value > condition.value ) {
+        // check that we have a legal comparison operation
+        if ( _.includes( comparisonOperators, condition.operator ) ) {
+            var expression = value +' ' +condition.operator +' ' +condition.value;
+            console.log( expression );
+            if ( eval( expression ) ) {
                 console.log( 'condition ok' );
                 // condition ok execute the then branch of componets
                 executeComponent( condition.then, 0, callback );
@@ -132,11 +138,9 @@ function executeMashup( mashup, done ) {
             }
         }
 
-        // else if for other operations or find a library that could do this without
-        // if, if else
         else {
-            console.log(  'operant not recognized' );
-            done( new Error( 'unrecognized operand in if' ));
+            console.log(  'Illegal operand ' +condition.operator  );
+            done( new Error( 'unrecognized operator ' +condition.operator +' in if' ));
         }
     }
 }
