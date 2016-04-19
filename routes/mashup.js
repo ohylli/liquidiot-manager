@@ -86,12 +86,8 @@ function executeMashup( mashup, done ) {
 
         // component to be executed
         var component = components[index];
-        if ( component.type === 'operation' ) {
-            executeOperation( component, next );
-        }
-
-        else if ( component.type === 'if' ) {
-            executeCondition( component, next );
+        if ( executors[ component.type ] ) {
+            executors[ component.type]( component, next );
         }
 
         else {
@@ -100,9 +96,11 @@ function executeMashup( mashup, done ) {
         }
     }
 
+    // functions for executing different mashup components
+    var executors = {};
     //  executes a operation component i.e. a component that communicates with a
     //  server
-    function executeOperation( operation, callback ) {
+    executors.operation = function ( operation, callback ) {
         console.log( 'executing ' +operation.operationId );
         // use the apps swagger client to perform the operation defined in the
         // component
@@ -121,10 +119,10 @@ function executeMashup( mashup, done ) {
             console.log( err );
             done( err );
         });
-    }
+    };
 
     // executes a condition component i.e. if
-    function executeCondition( condition, callback ) {
+    executors.if = function ( condition, callback ) {
         // get the value from the component's input variable
         // assumes that the output has only one value and that it is a number
         // not really a good solution, but works in this proof of concept
@@ -147,10 +145,10 @@ function executeMashup( mashup, done ) {
         }
 
         else {
-            console.log(  'Illegal operand ' +condition.operator  );
+            console.log(  'Illegal operator ' +condition.operator  );
             done( new Error( 'unrecognized operator ' +condition.operator +' in if' ));
         }
-    }
+    };
 }
 
 module.exports = router;
