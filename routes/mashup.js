@@ -17,13 +17,17 @@ var comparisonOperators = [ '<', '>', '==', '>=', '<=', '!=' ];
 
 // executes the mashup send in the post request body
 router.post( '/', function( req, res ) {
-    executeMashup( req.body, function ( err ) {
+    executeMashup( req.body, function ( err, result ) {
         if ( err ) {
             return res.status( 400 ).send( { 'message': err.message } );
         }
         
-        var result = { status: 'ok' };
-        res.send( result );
+        var body = { status: 'ok' };
+        if ( result ) {
+            body.result = result;
+        }
+        
+        res.send( body );
     });
 });
 
@@ -49,6 +53,10 @@ function executeMashup( mashup, done ) {
         // execute the first component
         executeComponent( mashup.components, 0, function () { 
             console.log( "done" );
+            if ( mashup.result && mashup.variables[ mashup.result ] ) {
+                return done( null, mashup.variables[ mashup.result ]);
+            }
+            
             done();
         });
     })
