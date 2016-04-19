@@ -110,7 +110,9 @@ function executeMashup( mashup, done ) {
             // save the output to the operation's output variable if given
             if ( operation.output ) {
                 var output = mashup.variables[operation.output];
-                output.value = res.obj; // save the operations result for future use
+                // assumes that the response body has only one value and that it is a number
+                // not really a good solution, but works in this proof of concept
+                output.value = res.obj[Object.keys( res.obj )[0]];
             }
 
             callback();
@@ -124,10 +126,7 @@ function executeMashup( mashup, done ) {
     // executes a condition component i.e. if
     executors.if = function ( condition, callback ) {
         // get the value from the component's input variable
-        // assumes that the output has only one value and that it is a number
-        // not really a good solution, but works in this proof of concept
-        var input = mashup.variables[condition.input1].value;
-        var value = input[Object.keys( input )[0]];
+        var value = mashup.variables[condition.input1].value;
         // check that we have a legal comparison operation
         if ( _.includes( comparisonOperators, condition.operator ) ) {
             var expression = value +' ' +condition.operator +' ' +condition.value;
