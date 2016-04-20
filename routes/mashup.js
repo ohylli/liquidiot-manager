@@ -87,11 +87,14 @@ function executeMashup( mashup, done ) {
 
         // component to be executed
         var component = components[index];
+        // get the components input and output variables
+        var input = mashup.variables[ component.input ];
+        var output = mashup.variables[ component.output ];
         
         // check if there is a function for executing the type of component we have
         if ( executors[ component.type ] ) {
             // execute the component
-            executors[ component.type]( component, next );
+            executors[ component.type]( component, input, output, next );
         }
 
         else {
@@ -104,7 +107,7 @@ function executeMashup( mashup, done ) {
     var executors = {};
     //  executes a operation component i.e. a component that communicates with a
     //  server
-    executors.operation = function ( operation, callback ) {
+    executors.operation = function ( operation, input, output, callback ) {
         console.log( 'executing ' +operation.operationId );
         // use the apps swagger client to perform the operation defined in the
         // component
@@ -112,8 +115,7 @@ function executeMashup( mashup, done ) {
         client[operation.tag][operation.operationId]( {}, {} )
         .then( function ( res ) {
             // save the value from the response  to the operation's output variable if given
-            if ( operation.output ) {
-                var output = mashup.variables[operation.output];
+            if ( output ) {
                 var value = {};
                 // from which app the value came
                 value.source = operation.app;
@@ -160,8 +162,9 @@ function executeMashup( mashup, done ) {
     };
 
     // executes a condition component i.e. if
-    executors.if = function ( condition, callback ) {
+    executors.if = function ( condition, input, output,  callback ) {
         // get the value from the component's input variable
+        // note if can have multiple inputs so the parameter input doesn't work with this component type
         var value = mashup.variables[condition.input1].value.value;
         // check that we have a legal comparison operation
         if ( _.includes( comparisonOperators, condition.operator ) ) {
@@ -186,29 +189,27 @@ function executeMashup( mashup, done ) {
     };
     
     // calculates the average for the array in the input variable and saves it to output variable
-    executors.average = function ( component, callback ) {
-        var input = mashup.variables[ component.input ].value;
+    executors.average = function ( component, input, output, callback ) {
+        var inputVal = input.value;
         var sum = 0;
         var numbers = "";
-        for ( i = 0, len = input.length; i < len; i++ ) {
-            sum += input[i].value;
-            numbers += input[i].value +" ";
+        for ( i = 0, len = inputVal.length; i < len; i++ ) {
+            sum += inputVal[i].value;
+            numbers += inputVal[i].value +" ";
         }
 
-        var avg = sum /input.length;
+        var avg = sum /inputVal.length;
         console.log( "Calculating average for " +numbers +" result " +avg );
-        var output = mashup.variables[ component.output ];
         output.value = { value: avg };
         callback();
     };
     
     // execute component that gets the minimum value from the array in the input variable
     // the result is saved to the output variable
-    executors.minimum = function ( component, callback ) {
-        var input = mashup.variables[ component.input ].value;
-        var min = Math.min.apply( null, input.map( function ( item ) { return item.value }));
+    executors.minimum = function ( component, input, output, callback ) {
+        var inputVal = input.value;
+        var min = Math.min.apply( null, inputVal.map( function ( item ) { return item.value }));
         console.log( "Got minimum value " +min );
-        var output = mashup.variables[ component.output ];
         output.value = { value: min };
         callback();
     };
