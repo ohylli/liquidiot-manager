@@ -201,6 +201,17 @@ function executeMashup( mashup, done ) {
         output.value = { value: avg };
         callback();
     };
+    
+    // execute component that gets the minimum value from the array in the input variable
+    // the result is saved to the output variable
+    executors.minimum = function ( component, callback ) {
+        var input = mashup.variables[ component.input ].value;
+        var min = Math.min.apply( null, input.map( function ( item ) { return item.value }));
+        console.log( "Got minimum value " +min );
+        var output = mashup.variables[ component.output ];
+        output.value = { value: min };
+        callback();
+    };
 }
 
 module.exports = router;
