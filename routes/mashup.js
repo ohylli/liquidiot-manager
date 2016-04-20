@@ -213,6 +213,15 @@ function executeMashup( mashup, done ) {
         output.value = { value: min };
         callback();
     };
+    
+    // execute maximum component which gets the maximum value from a array
+    executors.maximum = function ( component, input, output, callback ) {
+        var inputVal = input.value;
+        var max = Math.max.apply( null, inputVal.map( function ( item ) { return item.value }));
+        console.log( "Got maximum value " +max );
+        output.value = { value: max };
+        callback();
+    };
 }
 
 module.exports = router;
