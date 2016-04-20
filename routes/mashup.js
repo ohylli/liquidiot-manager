@@ -53,6 +53,7 @@ function executeMashup( mashup, done ) {
         // execute the first component
         executeComponent( mashup.components, 0, function () { 
             console.log( "done" );
+            // if the mashup has a result field add the variabled it refers to the response 
             if ( mashup.result && mashup.variables[ mashup.result ] ) {
                 return done( null, mashup.variables[ mashup.result ]);
             }
@@ -71,7 +72,7 @@ function executeMashup( mashup, done ) {
         console.log( "execute component" );
         // will be called when the component and its possible subcomponents are
         // executed
-        // executes the next component or if the last component calls the call back
+        // executes the next component or if the last component calls the callback
         // for the component array
         function next() {
             console.log( "next" );
@@ -86,7 +87,10 @@ function executeMashup( mashup, done ) {
 
         // component to be executed
         var component = components[index];
+        
+        // check if there is a function for executing the type of component we have
         if ( executors[ component.type ] ) {
+            // execute the component
             executors[ component.type]( component, next );
         }
 
@@ -107,12 +111,14 @@ function executeMashup( mashup, done ) {
         var client = clients[operation.app];
         client[operation.tag][operation.operationId]( {}, {} )
         .then( function ( res ) {
-            // save the output to the operation's output variable if given
+            // save the value from the response  to the operation's output variable if given
             if ( operation.output ) {
                 var output = mashup.variables[operation.output];
                 var value = {};
+                // from which app the value came
                 value.source = operation.app;
                 if ( output.type == "Number" || (output.type == "Array" && output.item == "Number"  )) {
+                    // we want a number from the response that will be saved to a variable or added to an array
                     // assumes that the response body has only one value and that it is a number
                     // not really a good solution, but works in this proof of concept
                     value.value = res.obj[Object.keys( res.obj )[0]];
@@ -121,6 +127,7 @@ function executeMashup( mashup, done ) {
                     }
                     
                     else {
+                        // save to array create an array if this is the first value
                         if ( output.value == undefined ) {
                             output.value = [];
                         }
@@ -130,6 +137,7 @@ function executeMashup( mashup, done ) {
                 }
                 
                 else {
+                    // value type not recognized
                     if ( output.type == "Array" ) {
                         var message = "Unrecognized type " +output.item +" for array item.";
                     }
@@ -170,11 +178,28 @@ function executeMashup( mashup, done ) {
                 callback();
             }
         }
-
+        
         else {
             console.log(  'Illegal operator ' +condition.operator  );
             done( new Error( 'unrecognized operator ' +condition.operator +' in if' ));
         }
+    };
+    
+    // calculates the average for the array in the input variable and saves it to output variable
+    executors.average = function ( component, callback ) {
+        var input = mashup.variables[ component.input ].value;
+        var sum = 0;
+        var numbers = "";
+        for ( i = 0, len = input.length; i < len; i++ ) {
+            sum += input[i].value;
+            numbers += input[i].value +" ";
+        }
+
+        var avg = sum /input.length;
+        console.log( "Calculating average for " +numbers +" result " +avg );
+        var output = mashup.variables[ component.output ];
+        output.value = { value: avg };
+        callback();
     };
 }
 
