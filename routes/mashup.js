@@ -98,7 +98,7 @@ function executeMashup( mashup, done ) {
         }
 
         else {
-            console.err( "Unsupported component type " +component.type );
+            console.log( "Unsupported component type " +component.type );
             done( new Error( "Unsupported component type " +component.type ) );
         }
     }
@@ -221,6 +221,24 @@ function executeMashup( mashup, done ) {
         console.log( "Got maximum value " +max );
         output.value = { value: max };
         callback();
+    };
+    
+    // execute filter component that filters values from the array in input variable
+    // and saves the result to output
+    executors.filter = function ( component, input, output, callback ) {
+        if ( _.includes( comparisonOperators, component.operator ) ) {
+            output.value = input.value.filter( function( item ) {
+                return eval( item.value +' ' +component.operator +' ' +component.value );
+            });
+            
+            callback();
+        }
+        
+        else {
+            var message = "Unrecognized operator " +component.operator +" in filter.";
+            console.log( message );
+            done( new Error( message ));
+        }
     };
 }
 
