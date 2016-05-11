@@ -7,6 +7,7 @@
  */
 
 var express = require( 'express' );
+var request = require( 'request' );
 var Swagger = require( 'swagger-client' );
 var _ = require( 'lodash' );
 
@@ -17,7 +18,7 @@ var comparisonOperators = [ '<', '>', '==', '>=', '<=', '!=' ];
 
 // executes the mashup send in the post request body
 router.post( '/', function( req, res ) {
-    executeMashup( req.body, function ( err, result ) {
+    executeMashup( req.body, req.app, function ( err, result ) {
         if ( err ) {
             return res.status( 400 ).send( { 'message': err.message } );
         }
@@ -32,15 +33,60 @@ router.post( '/', function( req, res ) {
 });
 
 // executes the given mashup description object
+// expressApp is the express application
 // callback is executed when mashup execution is completed or an error is encountered
-function executeMashup( mashup, done ) {
+function executeMashup( mashup, expressApp, done ) {
     // swaggerclients for communicating with the apps
     //  the api description url will be the key
-    var clients = {}; 
+    var clients = {};
+    var dynamicApps = {};
+    var count = 0;
+    mashup.apps.forEach( function ( app ) {
+        if ( typeof app == 'object' ) {
+            count++;
+            var query = {};
+            if ( app.app ) {
+                query.app = app.app;
+            }
+            
+            if ( app.device ) {
+                query.device = app.device;
+            }
+            
+            var url = 'http://localhost:' +expressApp.get( 'port' ) +'/devices';
+            request.get( {
+                url: url,
+                qs: query,
+                json: true
+            }, function ( err, resp, body ) {
+                if ( err ) {
+                    done( err );
+                }
+                
+                count--;
+                body.forEach( function( device ) {
+                    var apis = [];
+                    device.matchedApps.forEach( function ( deviceApp ) {
+                        apis.push( url +'/' +device._id +'/apps/' +deviceApp.id +'/api' );
+                    });
+                    
+                    dynamicApps[app.id] = apis;
+                });
+                
+                if ( count == 0 ) {
+                    console.log( dynamicApps );
+                    done( new Error( "dynamic apps not yet supported"));
+                }
+            });
+        }
+    });
 
-    getClients();
+    if ( count == 0 ) {
+        console.log( "no dynamic apps" );
+        getClients();
+    }
+    
     function getClients() {
-        console.log( "clientit" );
         //  create the swagger clients for the apps in the mashup
         var clientPromises = mashup.apps.map( function ( url ) {
             return new Swagger( { url: url, usePromise: true } )
