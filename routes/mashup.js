@@ -38,33 +38,37 @@ function executeMashup( mashup, done ) {
     //  the api description url will be the key
     var clients = {}; 
 
-    //  create the swagger clients for the apps in the mashup
-    var clientPromises = mashup.apps.map( function ( url ) {
-        return new Swagger( { url: url, usePromise: true } )
-        .then( function ( client ) {
-            clients[url] = client;
+    getClients();
+    function getClients() {
+        console.log( "clientit" );
+        //  create the swagger clients for the apps in the mashup
+        var clientPromises = mashup.apps.map( function ( url ) {
+            return new Swagger( { url: url, usePromise: true } )
+            .then( function ( client ) {
+                clients[url] = client;
+            });
         });
-    });
 
-    //  when all clients are created start executing the mashup
-    Promise.all( clientPromises )
-    .then( function () {
-        console.log( "Clients created. Execution started." );
-        // execute the first component
-        executeComponent( mashup.components, 0, function () { 
-            console.log( "done" );
-            // if the mashup has a result field add the variabled it refers to the response 
-            if ( mashup.result && mashup.variables[ mashup.result ] ) {
-                return done( null, mashup.variables[ mashup.result ]);
-            }
-            
-            done();
+        //  when all clients are created start executing the mashup
+        Promise.all( clientPromises )
+        .then( function () {
+            console.log( "Clients created. Execution started." );
+            // execute the first component
+            executeComponent( mashup.components, 0, function () { 
+                console.log( "done" );
+                // if the mashup has a result field add the variabled it refers to the response 
+                if ( mashup.result && mashup.variables[ mashup.result ] ) {
+                    return done( null, mashup.variables[ mashup.result ]);
+                }
+
+                done();
+            });
+        })
+        .catch( function ( err ) { 
+            console.log( err );
+            done( err );
         });
-    })
-    .catch( function ( err ) { 
-        console.log( err );
-        done( err );
-    });
+    }
 
     //  executes the component from components array with the given index
     //  callback is called when all componets in the array have been executed
