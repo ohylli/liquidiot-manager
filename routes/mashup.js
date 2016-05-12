@@ -75,7 +75,7 @@ function executeMashup( mashup, expressApp, done ) {
                 
                 if ( count == 0 ) {
                     console.log( dynamicApps );
-                    done( new Error( "dynamic apps not yet supported"));
+                    getClients();
                 }
             });
         }
@@ -88,13 +88,27 @@ function executeMashup( mashup, expressApp, done ) {
     
     function getClients() {
         //  create the swagger clients for the apps in the mashup
-        var clientPromises = mashup.apps.map( function ( url ) {
+        var clientPromises = mashup.apps.filter( function( app ) {
+            return typeof app == 'string';
+        })
+        .map( function ( url ) {
             return new Swagger( { url: url, usePromise: true } )
             .then( function ( client ) {
-                clients[url] = client;
+                clients[url] = [client];
             });
         });
 
+        _.forEach( dynamicApps, function( urls, id ) {
+            clients[ id ] = [];
+            urls.forEach( function( url ) {
+                var clientPromise = new Swagger( { url: url, usePromise: true } );
+                clientPromises.push( clientPromise );
+                clientPromise.then( function( client ) {
+                   clients[ id ].push( client ); 
+                });
+            });
+        });
+        
         //  when all clients are created start executing the mashup
         Promise.all( clientPromises )
         .then( function () {
@@ -161,8 +175,10 @@ function executeMashup( mashup, expressApp, done ) {
         console.log( 'executing ' +operation.operationId );
         // use the apps swagger client to perform the operation defined in the
         // component
-        var client = clients[operation.app];
-        client[operation.tag][operation.operationId]( {}, {} )
+        var operationClients = clients[operation.app];
+        
+        var operationPromises = operationClients.map( function( client ) {
+        return client[operation.tag][operation.operationId]( {}, {} )
         .then( function ( res ) {
             // save the value from the response  to the operation's output variable if given
             if ( output ) {
@@ -203,11 +219,16 @@ function executeMashup( mashup, expressApp, done ) {
                 }
             }
 
-            callback();
         })
         .catch( function ( err ) {
             console.log( err );
             done( err );
+        });
+        });
+        
+        Promise.all( operationPromises )
+        .then( function () {
+            callback();
         });
     };
 
