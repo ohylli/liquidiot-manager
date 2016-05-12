@@ -1,0 +1,47 @@
+{
+  "name": "averageTemperatureAlert",
+  "description": "Gives a sound alert if average temperature on devices is over 27.",
+  "apps": [
+     { "id": "temperatureapps", 
+       "app": ".measureTemperature", 
+       "device": "[location=TE113]"},
+    "http://130.230.142.101:3001/devices/56ebc69bd501e1db2f0aa006/apps/295546/api"
+  ],
+  "variables": {
+    "temperatures": {
+      "type": "Array",
+      "item": "Number"
+    },
+    "average": {
+      "type": "Number"
+    }
+  },
+  "components": [
+    {
+      "type": "operation",
+      "app": "temperatureapps",
+      "output": "temperatures",
+      "tag": "temperature",
+      "operationId": "temperatureGET"
+    },
+    {
+      "type": "average",
+      "input": "temperatures",
+      "output": "average"
+    },
+    {
+      "type": "if",
+      "operator": ">",
+      "input1": "average",
+      "value": 20,
+      "then": [
+        {
+          "type": "operation",
+          "app": "http://130.230.142.101:3001/devices/56ebc69bd501e1db2f0aa006/apps/295546/api",
+          "tag": "sound",
+          "operationId": "makeSound"
+        }
+      ]
+    }
+  ]
+}
