@@ -176,56 +176,56 @@ function executeMashup( mashup, expressApp, done ) {
         // use the apps swagger client to perform the operation defined in the
         // component
         var operationClients = clients[operation.app];
-        
-        var operationPromises = operationClients.map( function( client ) {
-        return client[operation.tag][operation.operationId]( {}, {} )
-        .then( function ( res ) {
-            // save the value from the response  to the operation's output variable if given
-            if ( output ) {
-                var value = {};
-                // from which app the value came
-                value.source = operation.app;
-                if ( output.type == "Number" || (output.type == "Array" && output.item == "Number"  )) {
-                    // we want a number from the response that will be saved to a variable or added to an array
-                    // assumes that the response body has only one value and that it is a number
-                    // not really a good solution, but works in this proof of concept
-                    value.value = res.obj[Object.keys( res.obj )[0]];
-                    if ( output.type == "Number" ) {
-                        output.value = value;
-                    }
-                    
-                    else {
-                        // save to array create an array if this is the first value
-                        if ( output.value == undefined ) {
-                            output.value = [];
-                        }
-                        
-                        output.value.push( value );
-                    }
-                }
-                
-                else {
-                    // value type not recognized
-                    if ( output.type == "Array" ) {
-                        var message = "Unrecognized type " +output.item +" for array item.";
-                    }
-                    
-                    else {
-                        var message = "Unrecognized type " +output.type +" for variable."; 
-                    }
-                    
-                    console.log( message );
-                    done( new Error( message ));
-                }
-            }
 
-        })
-        .catch( function ( err ) {
-            console.log( err );
-            done( err );
+        var operationPromises = operationClients.map( function( client ) {
+            return client[operation.tag][operation.operationId]( {}, {} )
+            .then( function ( res ) {
+                // save the value from the response  to the operation's output variable if given
+                if ( output ) {
+                    var value = {};
+                    // from which app the value came
+                    value.source = operation.app;
+                    if ( output.type == "Number" || (output.type == "Array" && output.item == "Number"  )) {
+                        // we want a number from the response that will be saved to a variable or added to an array
+                        // assumes that the response body has only one value and that it is a number
+                        // not really a good solution, but works in this proof of concept
+                        value.value = res.obj[Object.keys( res.obj )[0]];
+                        if ( output.type == "Number" ) {
+                            output.value = value;
+                        }
+
+                        else {
+                            // save to array create an array if this is the first value
+                            if ( output.value == undefined ) {
+                                output.value = [];
+                            }
+
+                            output.value.push( value );
+                        }
+                    }
+
+                    else {
+                        // value type not recognized
+                        if ( output.type == "Array" ) {
+                            var message = "Unrecognized type " +output.item +" for array item.";
+                        }
+
+                        else {
+                            var message = "Unrecognized type " +output.type +" for variable."; 
+                        }
+
+                        console.log( message );
+                        done( new Error( message ));
+                    }
+                }
+
+            })
+            .catch( function ( err ) {
+                console.log( err );
+                done( err );
+            });
         });
-        });
-        
+
         Promise.all( operationPromises )
         .then( function () {
             callback();
