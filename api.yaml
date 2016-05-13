@@ -1,7 +1,9 @@
 swagger: '2.0'
 info:
-  title: LiquidIoT DM APIs
+  title: LiquidIoT device manager
+  description: The liquidIoT device manager manages information about IoT devices and Apps deployed to them.
   version: "0.2"
+host: 130.230.142.101:3001
 produces:
   - application/json
 consumes:
@@ -10,6 +12,7 @@ paths:
   /apis:
     get:
       summary: Array of names and short descriptions of classes that have an API description
+      operationId: listClasses
       responses:
         '200':
           description: Array of class names and descriptions
@@ -25,6 +28,7 @@ paths:
   /apis/{className}:
     get:
       summary: API description of the class
+      operationId: getClass
       parameters:
         - name: className
           description: Name of the class
@@ -46,6 +50,7 @@ paths:
                 $ref: "#/definitions/error500"
     put:
       summary: Create or replace the API description
+      operationId: modifyClass
       parameters:
         - name: className
           description: Name of the class
@@ -69,6 +74,7 @@ paths:
                 $ref: "#/definitions/error500"
     delete:
       summary: Delete the API description
+      operationId: deleteClass
       parameters:
         - name: className
           description: Name of the class
@@ -92,6 +98,7 @@ paths:
     get:
       summary: Swagger API description of the application
       description: The API description combines the Swagger fragments of all the classes of the application. It also contains the host and basePath of the currently running application.
+      operationId: getApi
       parameters:
         - name: deviceId
           description: Device ID
