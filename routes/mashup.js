@@ -71,6 +71,13 @@ function executeMashup( mashup, expressApp, done ) {
                     done( err );
                 }
                 
+                if ( body.length == 0 ) {
+                    // no dynamic apps found cannot continue execution
+                    var message = "No dynamic apps found for " +app.id;
+                    console.log( message );
+                    return done( new Error( message ));
+                }
+                
                 count--; // one dynamic app processed
                 // for each device get the apps that matched the query and build the url for getting the app's
                 // api description
