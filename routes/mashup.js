@@ -71,6 +71,10 @@ function executeMashup( mashup, expressApp, done ) {
                     done( err );
                 }
                 
+                if ( resp.statusCode != 200 ) {
+                    return done( new Error( 'Could not get dynamic apps for ' +app.id ));
+                }
+                
                 if ( body.length == 0 ) {
                     // no dynamic apps found cannot continue execution
                     var message = "No dynamic apps found for " +app.id;
