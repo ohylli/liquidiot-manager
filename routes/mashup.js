@@ -24,6 +24,7 @@ router.post( '/', function( req, res ) {
         }
         
         var body = { status: 'ok' };
+        // add the mashup result to response body if there was one
         if ( result ) {
             body.result = result;
         }
@@ -33,26 +34,33 @@ router.post( '/', function( req, res ) {
 });
 
 // executes the given mashup description object
-// expressApp is the express application
-// callback is executed when mashup execution is completed or an error is encountered
+// expressApp is the express application whose information is used
+// done (a callback function)  is executed when mashup execution is completed or an error is encountered
 function executeMashup( mashup, expressApp, done ) {
     // swaggerclients for communicating with the apps
-    //  the api description url will be the key
+    //  the api description url or dynamic app id will be the key
     var clients = {};
+    // information about what actual apps matched the dynamic app definitions
     var dynamicApps = {};
-    var count = 0;
+    var count = 0; // how many dynamic apps, used in counting callbacks
+    // find out what actual apps correspond to the dynamic app queries
     mashup.apps.forEach( function ( app ) {
         if ( typeof app == 'object' ) {
-            count++;
+            // this is a dynamic app not a predefined api url
+            count++; // one more dynamic app to process
+            // query parameters for the request that gets the apps
             var query = {};
             if ( app.app ) {
+                // what kind of apps we want
                 query.app = app.app;
             }
             
             if ( app.device ) {
+                // on which kind of device
                 query.device = app.device;
             }
             
+            // url for device and app query api
             var url = 'http://localhost:' +expressApp.get( 'port' ) +'/devices';
             request.get( {
                 url: url,
@@ -63,9 +71,11 @@ function executeMashup( mashup, expressApp, done ) {
                     done( err );
                 }
                 
-                count--;
+                count--; // one dynamic app processed
+                // for each device get the apps that matched the query and build the url for getting the app's
+                // api description
                 body.forEach( function( device ) {
-                    var apis = [];
+                    var apis = []; // api urls
                     device.matchedApps.forEach( function ( deviceApp ) {
                         apis.push( url +'/' +device._id +'/apps/' +deviceApp.id +'/api' );
                     });
@@ -74,33 +84,43 @@ function executeMashup( mashup, expressApp, done ) {
                 });
                 
                 if ( count == 0 ) {
-                    console.log( dynamicApps );
+                    // all dynamic apps processed
+                    console.log( "Dynamic apps processed found:", dynamicApps );
+                    // now we can get swagger clients for all apps both dynamic and predefined
                     getClients();
                 }
             });
         }
     });
 
+    // this mashup did not contain any dynamic apps
     if ( count == 0 ) {
         console.log( "no dynamic apps" );
         getClients();
     }
     
+    // get swagger clients for all apps participating in the mashup both dynamic and predefined
     function getClients() {
-        //  create the swagger clients for the apps in the mashup
+        //  create the swagger clients for the predefined apps
         var clientPromises = mashup.apps.filter( function( app ) {
+            // now process only predefined apps not dynamic
             return typeof app == 'string';
         })
         .map( function ( url ) {
             return new Swagger( { url: url, usePromise: true } )
             .then( function ( client ) {
+                // save the client app api description url is the key
                 clients[url] = [client];
             });
         });
 
+        // get clients for dynamically defined applications
         _.forEach( dynamicApps, function( urls, id ) {
+            // for saving the clients for this dynamic app definition
+            // the id is the key
             clients[ id ] = [];
             urls.forEach( function( url ) {
+                // a promise for client creation
                 var clientPromise = new Swagger( { url: url, usePromise: true } );
                 clientPromises.push( clientPromise );
                 clientPromise.then( function( client ) {
@@ -173,8 +193,8 @@ function executeMashup( mashup, expressApp, done ) {
     //  server
     executors.operation = function ( operation, input, output, callback ) {
         console.log( 'executing ' +operation.operationId );
-        // use the apps swagger client to perform the operation defined in the
-        // component
+        // perform the operation to all apps defined for this component
+        // the app can refer to a particular app by api description url or to a dynamic app definition by id
         var operationClients = clients[operation.app];
 
         var operationPromises = operationClients.map( function( client ) {
@@ -184,6 +204,7 @@ function executeMashup( mashup, expressApp, done ) {
                 if ( output ) {
                     var value = {};
                     // from which app the value came
+                    // todo fix doesn't work with dynamic apps
                     value.source = operation.app;
                     if ( output.type == "Number" || (output.type == "Array" && output.item == "Number"  )) {
                         // we want a number from the response that will be saved to a variable or added to an array
@@ -218,7 +239,6 @@ function executeMashup( mashup, expressApp, done ) {
                         done( new Error( message ));
                     }
                 }
-
             })
             .catch( function ( err ) {
                 console.log( err );
@@ -226,6 +246,7 @@ function executeMashup( mashup, expressApp, done ) {
             });
         });
 
+        // continue when the operation has been performed to all apps
         Promise.all( operationPromises )
         .then( function () {
             callback();
