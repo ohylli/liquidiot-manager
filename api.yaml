@@ -174,8 +174,68 @@ definitions:
       description: error message
       type: object
   device:
+    description: Information about a device in the manager.
     type: object
     properties:
+      '_id':
+        type: string
+        description: Unique id used to identify devices in the system.
+      name:
+        type: string
+        description: A human readable name for the device
+      manufacturer:
+        type: string
+      libraries:
+        type: object
+        description: Software libraries installed where key is the library name and value its version.
       location:
         type: string
         description: Where the device is located.
+      url:
+        type: string
+        description: URL for the devices management api.
+      connected-devices:
+        type: object
+        description: information about connected devices such as sensors. attribute name is a device type and value has information about device like model
+      classes:
+        type: array
+        description: hardware capabilities offered by the device
+        items:
+          type: string
+      apps:
+        type: array
+        description: applications deployed on the device
+        items:
+          $ref: '#/definitions/app'
+      matchedApps:
+        type: array
+        description: This field is present only when querying devices with an app filter. In which case this lists apps matched by the filter.
+        items:
+          $ref: '#/definitions/app'
+  app:
+    type: object
+    properties:
+      name:
+        type: string
+        description: application name
+      version:
+        type: string
+        description: the application version
+      description:
+        type: string
+        description: application description
+      author:
+        type: string
+      license:
+        type: string
+      classes:
+        type: array
+        description: Application classes that this app implements. Defines which kind of api the app offers.
+        items:
+          type: string
+      id:
+        type: string
+        description: Unique identifier for the deployment inside the device. Used to identify app in api.
+      status:
+        type: string
+        description: deployment status running, stopped, error.
