@@ -1,12 +1,13 @@
 swagger: '2.0'
 info:
   title: LiquidIoT device manager
-  description: The liquidIoT device manager manages information about IoT devices and Apps deployed to them.
+  description: The liquidIoT device manager manages information about IoT devices and apps deployed to them.
                 Devices can register to the manager and also update their information later such as what applications have .
-                been deployed to them. The manager can give a list of all devices and applications depoyed on them.
+                been deployed to them. The manager can give a list of all devices and applications deployed on them.
                 User can also query devices and applications with different criterions.
                 
-                Device manager allows also 
+                Device manager manages also app api classes which define using swagger which kind of api an application has.
+                The device manager can produce a swagger api description for an app deployed on a device based on the classes the app has.
                 
   version: "0.2"
 host: 130.230.142.101:3001
