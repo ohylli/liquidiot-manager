@@ -11,10 +11,6 @@ info:
                 
   version: "0.2"
 host: 130.230.142.101:3001
-produces:
-  - application/json
-consumes:
-  - application/json
 paths:
   /apis:
     get:
@@ -130,7 +126,37 @@ paths:
             description: "server error"
             schema:
                 $ref: "#/definitions/error500"
-
+  /devices:
+    get:
+      summary: List of devices.
+      description: Infomrmation about each device such as hardware capabilities (classes) and apps deployed.
+      operationId: getDevices
+      parameters:
+        - name: device
+          description: Filter devices.
+          in: query
+          required: false
+          type: string
+        - name: app
+          description: Filter based on applications
+          in: query
+          required: false
+          type: string
+      responses:
+        '200':
+          description: List of devices. If no filtering parameters all of them.
+          schema:
+            type: array
+            items:
+               $ref: '#/definitions/device'
+        '404':
+            description: device, app or classes the app refers to  not found
+            schema:
+                $ref: "#/definitions/error404"
+        '500':
+            description: "server error"
+            schema:
+                $ref: "#/definitions/error500"
 definitions:
   swaggerFragment:
     type: object
@@ -147,3 +173,9 @@ definitions:
   error500:
       description: error message
       type: object
+  device:
+    type: object
+    properties:
+      location:
+        type: string
+        description: Where the device is located.
