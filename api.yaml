@@ -151,6 +151,24 @@ paths:
                $ref: '#/definitions/device'
         '400':
           description: Error in app or device filter expression or with database.
+    post:
+      summary: Add a new device.
+      description: A device registers itself to the device manager by adding its information.
+      operationId: addDevice
+      parameters:
+        - name: device
+          description: The device's information.
+          in: body
+          schema:
+            $ref: '#/definitions/device'
+      responses:
+        '200':
+          description: Device added successfully. Returns the id of the newly added device.
+          schema:
+            type: string
+            description: the id of the added device
+        '400':
+          description: error in adding the device.
 definitions:
   swaggerFragment:
     type: object
