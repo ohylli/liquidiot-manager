@@ -169,6 +169,24 @@ paths:
             description: the id of the added device
         '400':
           description: error in adding the device.
+  /devices/id/{id}:
+    get:
+      summary: Get device by id.
+      operationId: deeviceGet
+      parameters:
+        - name: id
+          description: the device id
+          required: true
+          in: path
+      responses:
+        '200':
+          description: The device information.
+          schema:
+            $ref: '#/definitions/device'
+        '404':
+          description: No device with given id.
+        '400':
+          description: Data base error.
 definitions:
   swaggerFragment:
     type: object
