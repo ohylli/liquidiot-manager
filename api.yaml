@@ -176,6 +176,7 @@ paths:
       parameters:
         - name: id
           description: the device id
+          type: string
           required: true
           in: path
       responses:
@@ -187,6 +188,32 @@ paths:
           description: No device with given id.
         '400':
           description: Data base error.
+  /devices/{id}/apps:
+    post:
+      summary: Add application.
+      description: When a application is deployed to a device it sends the app's information to the device manager.
+      operationId: deviceSaveApp
+      parameters:
+        - name: id
+          description: the device id
+          required: true
+          type: string
+          in: path
+        - name: app
+          description: Information about the new app.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/app'
+      responses:
+        '200':
+          description: The app was added successfully.
+          schema:
+            $ref: '#/definitions/device'
+        '404':
+          description: No device with given id.
+        '500':
+          description: Data base error or something else.
 definitions:
   swaggerFragment:
     type: object
