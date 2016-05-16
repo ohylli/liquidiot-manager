@@ -149,14 +149,8 @@ paths:
             type: array
             items:
                $ref: '#/definitions/device'
-        '404':
-            description: device, app or classes the app refers to  not found
-            schema:
-                $ref: "#/definitions/error404"
-        '500':
-            description: "server error"
-            schema:
-                $ref: "#/definitions/error500"
+        '400':
+          description: Error in app or device filter expression or with database.
 definitions:
   swaggerFragment:
     type: object
