@@ -239,6 +239,37 @@ paths:
           description: No device with given id.
         '500':
           description: Data base error or something else.
+  /devices/{devid}/apps/{appid}:
+    put:
+      summary: "Update application's information."
+      description: "When deployed application's information such as its status changes the device updates the information to device manager."
+      operationId: deviceUpdateApp
+      parameters:
+        - name: devid
+          description: the device id
+          required: true
+          type: string
+          in: path
+        - name: appid
+          description: The id of the app to be removed.
+          in: path
+          required: true
+          type: string
+        - name: app
+          description: The app information (not just the updated part)
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/app'
+      responses:
+        '200':
+          description: The app information  was updated successfully.
+          schema:
+            $ref: '#/definitions/device'
+        '404':
+          description: No device with given id or no app with given id on a device.
+        '500':
+          description: Data base error or something else.
 definitions:
   swaggerFragment:
     type: object
