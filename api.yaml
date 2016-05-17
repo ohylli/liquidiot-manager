@@ -189,31 +189,6 @@ paths:
           description: No device with given id.
         '400':
           description: Data base error.
-  /devices/{devid}/apps/{appid}:
-    delete:
-      summary: Remove application.
-      description: When an application is removed from a device. The device removes it from the device manager.
-      operationId: deviceRemoveApp
-      parameters:
-        - name: devid
-          description: the device id
-          required: true
-          type: string
-          in: path
-        - name: appid
-          description: The id of the app to be removed.
-          in: path
-          required: true
-          type: string
-      responses:
-        '200':
-          description: The app was removed successfully.
-          schema:
-            $ref: '#/definitions/device'
-        '404':
-          description: No device with given id or no app with given id on a device.
-        '500':
-          description: Data base error or something else.
   /devices/{id}/apps:
     post:
       summary: Add application.
@@ -265,6 +240,30 @@ paths:
       responses:
         '200':
           description: The app information  was updated successfully.
+          schema:
+            $ref: '#/definitions/device'
+        '404':
+          description: No device with given id or no app with given id on a device.
+        '500':
+          description: Data base error or something else.
+    delete:
+      summary: Remove application.
+      description: When an application is removed from a device. The device removes it from the device manager.
+      operationId: deviceRemoveApp
+      parameters:
+        - name: devid
+          description: the device id
+          required: true
+          type: string
+          in: path
+        - name: appid
+          description: The id of the app to be removed.
+          in: path
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The app was removed successfully.
           schema:
             $ref: '#/definitions/device'
         '404':
