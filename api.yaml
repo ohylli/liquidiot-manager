@@ -112,7 +112,7 @@ paths:
           type: string
       responses:
         '200':
-          description: Full Swagger description
+          description: Full Swagger description of the api.
           schema:
             $ref: '#/definitions/swaggerDescription'
         '404':
@@ -126,11 +126,13 @@ paths:
   /devices:
     get:
       summary: List of devices.
-      description: Information about each device such as hardware capabilities (classes) and apps deployed.
+      description: Information about each device such as hardware capabilities (classes) and apps deployed. This list can be filtered based on device information
+                   or based on the apps running on the devices. The filter expressions are based on CSS selectors. You can for example filter based on device or app classes .canPlaySound 
+                   or based on attributes [location=TE113]. You can also build more complecs expressions e.g. .canPlaySound[location=TE113].
       operationId: deviceList
       parameters:
         - name: device
-          description: Filter devices.
+          description: Filter based on device's information.
           in: query
           required: false
           type: string
