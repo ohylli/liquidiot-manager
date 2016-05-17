@@ -227,7 +227,7 @@ paths:
           type: string
           in: path
         - name: appid
-          description: The id of the app to be removed.
+          description: The id of the app to be updated.
           in: path
           required: true
           type: string
