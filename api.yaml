@@ -22,12 +22,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
-              properties:
-                  name:
-                      type: string
-                  description:
-                      type: string
+              $ref: '#/definitions/class'
   /apis/{className}:
     get:
       summary: API description of the class
@@ -54,6 +49,7 @@ paths:
                 $ref: "#/definitions/error500"
     put:
       summary: Create or replace the API description
+      description: A new classs will be created if there already is not a class with the given name otherwise the existing class will be updated with the information in the request.
       operationId: classModify
       parameters:
         - name: className
@@ -62,14 +58,14 @@ paths:
           required: true
           type: string
         - name: api
-          description: Name of the class
+          description: A swagger fragment that defines the api offered by apps that implement this class.
           in: body
           required: true
           schema:
             $ref: '#/definitions/swaggerFragment'
       responses:
         '200':
-          description: Swagger fragment
+          description: The class was created or updated successfully.
           schema:
             $ref: '#/definitions/swaggerFragment'
         '500':
@@ -87,7 +83,7 @@ paths:
           type: string
       responses:
         '200':
-          description: Swagger fragment
+          description: Class deleted successfully.
           schema:
             $ref: '#/definitions/swaggerFragment'
         '404':
@@ -100,8 +96,8 @@ paths:
                 $ref: "#/definitions/error500"
   /devices/{deviceId}/apps/{appId}/api:
     get:
-      summary: Swagger API description of the application
-      description: The API description combines the Swagger fragments of all the classes of the application. It also contains the host and basePath of the currently running application.
+      summary: Swagger description of the application api
+      description: The API description combines the Swagger fragments of all the classes of the application. It also contains the host and basePath of the application that depend on the device the app is running on.
       operationId: deviceSwaggerApi
       parameters:
         - name: deviceId
@@ -130,7 +126,7 @@ paths:
   /devices:
     get:
       summary: List of devices.
-      description: Infomrmation about each device such as hardware capabilities (classes) and apps deployed.
+      description: Information about each device such as hardware capabilities (classes) and apps deployed.
       operationId: deviceList
       parameters:
         - name: device
@@ -159,6 +155,7 @@ paths:
       parameters:
         - name: device
           description: The device's information.
+          required: true
           in: body
           schema:
             $ref: '#/definitions/device'
@@ -173,7 +170,8 @@ paths:
   /devices/id/{id}:
     get:
       summary: Get device by id.
-      operationId: deeviceGet
+      description: Get the information of a specific device.
+      operationId: deviceGet
       parameters:
         - name: id
           description: the device id
@@ -217,7 +215,7 @@ paths:
   /devices/{id}/apps:
     post:
       summary: Add application.
-      description: When a application is deployed to a device it sends the app's information to the device manager.
+      description: When a application is deployed to a device the device  sends the app's information to the device manager.
       operationId: deviceSaveApp
       parameters:
         - name: id
@@ -370,3 +368,10 @@ definitions:
       status:
         type: string
         description: deployment status running, stopped, error.
+  class:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
