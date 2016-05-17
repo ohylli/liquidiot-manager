@@ -270,6 +270,23 @@ paths:
           description: No device with given id or no app with given id on a device.
         '500':
           description: Data base error or something else.
+  /mashups:
+    post:
+      summary: execute mashup 
+      description: Executes the given mashup and reports the execution results.
+      operationId: mashupExecute
+      parameters:
+        - name: mashup
+          description: The mashup to be executed.
+          required: true
+          in: body
+          schema:
+            type: object
+      responses:
+        '200':
+          description: Mashup executed successfully
+        '400':
+          description: Invalid mashup.
 definitions:
   swaggerFragment:
     type: object
