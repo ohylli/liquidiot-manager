@@ -1,0 +1,1074 @@
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>LiquidIoT device manager</title>
+    <style type="text/css">
+      body { 
+	font-family: Trebuchet MS, sans-serif;
+	font-size: 15px;
+	color: #444;
+	margin-right: 24px;
+}
+
+h1	{
+	font-size: 25px;
+}
+h2	{
+	font-size: 20px;
+}
+h3	{
+	font-size: 16px;
+	font-weight: bold;
+}
+hr	{
+	height: 1px;
+	border: 0;
+	color: #ddd;
+	background-color: #ddd;
+	display: none;
+}
+
+.app-desc {
+  clear: both;
+  margin-left: 20px;
+}
+.param-name {
+  width: 100%;
+}
+.license-info {
+  margin-left: 20px;
+}
+
+.license-url {
+  margin-left: 20px;
+}
+
+.model {
+  margin: 0 0 0px 20px;
+}
+
+.method {
+  margin-left: 20px;
+}
+
+.method-notes	{
+	margin: 10px 0 20px 0;
+	font-size: 90%;
+	color: #555;
+}
+
+pre {
+  padding: 10px;
+  margin-bottom: 2px;
+}
+
+.http-method {
+ text-transform: uppercase;
+}
+
+pre.get {
+  background-color: #0f6ab4;
+}
+
+pre.post {
+  background-color: #10a54a;
+}
+
+pre.put {
+  background-color: #c5862b;
+}
+
+pre.delete {
+  background-color: #a41e22;
+}
+
+.huge	{
+	color: #fff;
+}
+
+pre.example {
+  background-color: #f3f3f3;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+code {
+  white-space: pre;
+}
+
+.nickname {
+  font-weight: bold;
+}
+
+.method-path {
+  font-size: 1.5em;
+  background-color: #0f6ab4;
+}
+
+.up {
+  float:right;
+}
+
+.parameter {
+  width: 500px;
+}
+
+.param {
+  width: 500px;
+  padding: 10px 0 0 20px;
+  font-weight: bold;
+}
+
+.param-desc {
+  width: 700px;
+  padding: 0 0 0 20px;
+  color: #777;
+}
+
+.param-type {
+  font-style: italic;
+}
+
+.param-enum-header {
+width: 700px;
+padding: 0 0 0 60px;
+color: #777;
+font-weight: bold;
+}
+
+.param-enum {
+width: 700px;
+padding: 0 0 0 80px;
+color: #777;
+font-style: italic;
+}
+
+.field-label {
+  padding: 0;
+  margin: 0;
+  clear: both;
+}
+
+.field-items	{
+	padding: 0 0 15px 0;
+	margin-bottom: 15px;
+}
+
+.return-type {
+  clear: both;
+  padding-bottom: 10px;
+}
+
+.param-header {
+  font-weight: bold;
+}
+
+.method-tags {
+  text-align: right;
+}
+
+.method-tag {
+  background: none repeat scroll 0% 0% #24A600;
+  border-radius: 3px;
+  padding: 2px 10px;
+  margin: 2px;
+  color: #FFF;
+  display: inline-block;
+  text-decoration: none;
+}
+    </style>
+  </head>
+  <body>
+  <h1>LiquidIoT device manager</h1>
+    <div class="app-desc">The liquidIoT device manager manages information about IoT devices and apps deployed to them. Devices can register to the manager and also update their information later such as what applications have . been deployed to them. The manager can give a list of all devices and applications deployed on them. User can also query devices and applications with different criterions. Device manager manages also app api classes which define using swagger which kind of api an application has. The device manager can produce a swagger api description for an app deployed on a device based on the classes the app has.</div>
+    <div class="app-desc">More information: <a href="http://github.com/ohylli/liquidiot-manager">http://github.com/ohylli/liquidiot-manager</a></div>
+    <div class="app-desc">Contact Info: <a href=""></a></div>
+    <div class="app-desc">Version: 0.2</div>
+    <div class="license-info">Copyright (c) TUT Tampere University of Technology 2015-2016, all rights reserved</div>
+    <div class="license-url"></div>
+  <h2>Access</h2>
+  
+
+  <h2><a name="__Methods">Methods</a></h2>
+  [ Jump to <a href="#__Models">Models</a> ]
+
+  
+  <h2>Table of Contents </h2>
+  <div class="method-summary"></div>
+  
+  <ol>
+  
+  
+  
+  <li><a href="#classGet"><code><span class="http-method">get</span> /apis/{className}</code></a></li>
+  
+  <li><a href="#classList"><code><span class="http-method">get</span> /apis</code></a></li>
+  
+  <li><a href="#classModify"><code><span class="http-method">put</span> /apis/{className}</code></a></li>
+  
+  <li><a href="#classRemove"><code><span class="http-method">delete</span> /apis/{className}</code></a></li>
+  
+  <li><a href="#deviceAdd"><code><span class="http-method">post</span> /devices</code></a></li>
+  
+  <li><a href="#deviceGet"><code><span class="http-method">get</span> /devices/id/{id}</code></a></li>
+  
+  <li><a href="#deviceList"><code><span class="http-method">get</span> /devices</code></a></li>
+  
+  <li><a href="#deviceRemoveApp"><code><span class="http-method">delete</span> /devices/{devid}/apps/{appid}</code></a></li>
+  
+  <li><a href="#deviceSaveApp"><code><span class="http-method">post</span> /devices/{id}/apps</code></a></li>
+  
+  <li><a href="#deviceSwaggerApi"><code><span class="http-method">get</span> /devices/{deviceId}/apps/{appId}/api</code></a></li>
+  
+  <li><a href="#deviceUpdateApp"><code><span class="http-method">put</span> /devices/{devid}/apps/{appid}</code></a></li>
+  
+  <li><a href="#mashupExecute"><code><span class="http-method">post</span> /mashups</code></a></li>
+  
+  
+  
+  </ol>
+  
+
+  
+  
+  
+  
+  <div class="method"><a name="classGet"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /apis/{className}</code></pre></div>
+    <div class="method-summary">API description of the class (<span class="nickname">classGet</span>)</div>
+    
+    <div class="method-notes">A swagger fragment which defines what kind of operations an app implementing this class will offer.</div>
+
+    
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">className (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Name of the class </div>
+    </div>  <!-- field-items -->
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#swaggerFragment">swaggerFragment</a>
+      
+    </div>
+    
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    
+
+    
+
+    <h3 class="field-label">Responses</h3>
+    
+    <h4 class="field-label">200</h4>
+    Swagger fragment
+    
+    
+    <h4 class="field-label">404</h4>
+    class not found
+    
+    
+    <h4 class="field-label">500</h4>
+    server error
+    
+    
+  </div> <!-- method -->
+  <hr/>
+  
+  <div class="method"><a name="classList"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /apis</code></pre></div>
+    <div class="method-summary">List all classes. (<span class="nickname">classList</span>)</div>
+    
+    <div class="method-notes">Lists all classes with their names and a short description.</div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      array[<a href="#class">class</a>]
+      
+    </div>
+    
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    
+
+    
+
+    <h3 class="field-label">Responses</h3>
+    
+    <h4 class="field-label">200</h4>
+    Array of class names and descriptions
+    
+    
+  </div> <!-- method -->
+  <hr/>
+  
+  <div class="method"><a name="classModify"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="put"><code class="huge"><span class="http-method">put</span> /apis/{className}</code></pre></div>
+    <div class="method-summary">Create or replace the API description (<span class="nickname">classModify</span>)</div>
+    
+    <div class="method-notes">A new classs will be created if there already is not a class with the given name otherwise the existing class will be updated with the information in the request.</div>
+
+    
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">className (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Name of the class </div>
+    </div>  <!-- field-items -->
+    
+
+    
+
+    
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">api (required)</div>
+
+      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; A swagger fragment that defines the api offered by apps that implement this class. </div>
+    </div>  <!-- field-items -->
+    
+
+    
+
+    
+
+    
+
+    
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#swaggerFragment">swaggerFragment</a>
+      
+    </div>
+    
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    
+
+    
+
+    <h3 class="field-label">Responses</h3>
+    
+    <h4 class="field-label">200</h4>
+    The class was created or updated successfully.
+    
+    
+    <h4 class="field-label">500</h4>
+    server error
+    
+    
+  </div> <!-- method -->
+  <hr/>
+  
+  <div class="method"><a name="classRemove"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="delete"><code class="huge"><span class="http-method">delete</span> /apis/{className}</code></pre></div>
+    <div class="method-summary">Delete the API description (<span class="nickname">classRemove</span>)</div>
+    
+    <div class="method-notes"></div>
+
+    
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">className (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Name of the class </div>
+    </div>  <!-- field-items -->
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#swaggerFragment">swaggerFragment</a>
+      
+    </div>
+    
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    
+
+    
+
+    <h3 class="field-label">Responses</h3>
+    
+    <h4 class="field-label">200</h4>
+    Class deleted successfully.
+    
+    
+    <h4 class="field-label">404</h4>
+    class not found
+    
+    
+    <h4 class="field-label">500</h4>
+    server error
+    
+    
+  </div> <!-- method -->
+  <hr/>
+  
+  <div class="method"><a name="deviceAdd"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /devices</code></pre></div>
+    <div class="method-summary">Add a new device. (<span class="nickname">deviceAdd</span>)</div>
+    
+    <div class="method-notes">A device registers itself to the device manager by adding its information.</div>
+
+    
+
+    
+
+    
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">device (required)</div>
+
+      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; The device&#39;s information. </div>
+    </div>  <!-- field-items -->
+    
+
+    
+
+    
+
+    
+
+    
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      
+      String
+    </div>
+    
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    
+
+    
+
+    <h3 class="field-label">Responses</h3>
+    
+    <h4 class="field-label">200</h4>
+    Device added successfully. Returns the id of the newly added device.
+    
+    
+    <h4 class="field-label">400</h4>
+    error in adding the device.
+    
+    
+  </div> <!-- method -->
+  <hr/>
+  
+  <div class="method"><a name="deviceGet"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /devices/id/{id}</code></pre></div>
+    <div class="method-summary">Get device by id. (<span class="nickname">deviceGet</span>)</div>
+    
+    <div class="method-notes">Get the information of a specific device.</div>
+
+    
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">id (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; the device id </div>
+    </div>  <!-- field-items -->
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#device">device</a>
+      
+    </div>
+    
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    
+
+    
+
+    <h3 class="field-label">Responses</h3>
+    
+    <h4 class="field-label">200</h4>
+    The device information.
+    
+    
+    <h4 class="field-label">400</h4>
+    Data base error.
+    
+    
+    <h4 class="field-label">404</h4>
+    No device with given id.
+    
+    
+  </div> <!-- method -->
+  <hr/>
+  
+  <div class="method"><a name="deviceList"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /devices</code></pre></div>
+    <div class="method-summary">List of devices. (<span class="nickname">deviceList</span>)</div>
+    
+    <div class="method-notes">Information about each device such as hardware capabilities (classes) and apps deployed. This list can be filtered based on device information or based on the apps running on the devices. The filter expressions are based on CSS selectors. You can for example filter based on device or app classes .canPlaySound or based on attributes [location=TE113]. You can also build more complecs expressions e.g. .canPlaySound[location=TE113].</div>
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">device (optional)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Filter based on device&#39;s information. </div><div class="param">app (optional)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Filter based on applications </div>
+    </div>  <!-- field-items -->
+    
+
+    
+
+    
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      array[<a href="#device">device</a>]
+      
+    </div>
+    
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    
+
+    
+
+    <h3 class="field-label">Responses</h3>
+    
+    <h4 class="field-label">200</h4>
+    List of devices. If no filtering parameters all of them.
+    
+    
+    <h4 class="field-label">400</h4>
+    Error in app or device filter expression or with database.
+    
+    
+  </div> <!-- method -->
+  <hr/>
+  
+  <div class="method"><a name="deviceRemoveApp"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="delete"><code class="huge"><span class="http-method">delete</span> /devices/{devid}/apps/{appid}</code></pre></div>
+    <div class="method-summary">Remove application. (<span class="nickname">deviceRemoveApp</span>)</div>
+    
+    <div class="method-notes">When an application is removed from a device. The device removes it from the device manager.</div>
+
+    
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">devid (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; the device id </div><div class="param">appid (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; The id of the app to be removed. </div>
+    </div>  <!-- field-items -->
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#device">device</a>
+      
+    </div>
+    
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    
+
+    
+
+    <h3 class="field-label">Responses</h3>
+    
+    <h4 class="field-label">200</h4>
+    The app was removed successfully.
+    
+    
+    <h4 class="field-label">404</h4>
+    No device with given id or no app with given id on a device.
+    
+    
+    <h4 class="field-label">500</h4>
+    Data base error or something else.
+    
+    
+  </div> <!-- method -->
+  <hr/>
+  
+  <div class="method"><a name="deviceSaveApp"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /devices/{id}/apps</code></pre></div>
+    <div class="method-summary">Add application. (<span class="nickname">deviceSaveApp</span>)</div>
+    
+    <div class="method-notes">When a application is deployed to a device the device  sends the app&#39;s information to the device manager.</div>
+
+    
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">id (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; the device id </div>
+    </div>  <!-- field-items -->
+    
+
+    
+
+    
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">app (required)</div>
+
+      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; Information about the new app. </div>
+    </div>  <!-- field-items -->
+    
+
+    
+
+    
+
+    
+
+    
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#device">device</a>
+      
+    </div>
+    
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    
+
+    
+
+    <h3 class="field-label">Responses</h3>
+    
+    <h4 class="field-label">200</h4>
+    The app was added successfully.
+    
+    
+    <h4 class="field-label">404</h4>
+    No device with given id.
+    
+    
+    <h4 class="field-label">500</h4>
+    Data base error or something else.
+    
+    
+  </div> <!-- method -->
+  <hr/>
+  
+  <div class="method"><a name="deviceSwaggerApi"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /devices/{deviceId}/apps/{appId}/api</code></pre></div>
+    <div class="method-summary">Swagger description of the application api (<span class="nickname">deviceSwaggerApi</span>)</div>
+    
+    <div class="method-notes">The API description combines the Swagger fragments of all the classes of the application. It also contains the host and basePath of the application that depend on the device the app is running on.</div>
+
+    
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">deviceId (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Device ID </div><div class="param">appId (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; Application ID </div>
+    </div>  <!-- field-items -->
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#swaggerDescription">swaggerDescription</a>
+      
+    </div>
+    
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    
+
+    
+
+    <h3 class="field-label">Responses</h3>
+    
+    <h4 class="field-label">200</h4>
+    Full Swagger description of the api.
+    
+    
+    <h4 class="field-label">404</h4>
+    device, app or classes the app refers to  not found
+    
+    
+    <h4 class="field-label">500</h4>
+    server error
+    
+    
+  </div> <!-- method -->
+  <hr/>
+  
+  <div class="method"><a name="deviceUpdateApp"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="put"><code class="huge"><span class="http-method">put</span> /devices/{devid}/apps/{appid}</code></pre></div>
+    <div class="method-summary">Update application&#39;s information. (<span class="nickname">deviceUpdateApp</span>)</div>
+    
+    <div class="method-notes">When deployed application&#39;s information such as its status changes the device updates the information to device manager.</div>
+
+    
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">devid (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; the device id </div><div class="param">appid (required)</div>
+
+      <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash; The id of the app to be removed. </div>
+    </div>  <!-- field-items -->
+    
+
+    
+
+    
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">app (required)</div>
+
+      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; The app information (not just the updated part) </div>
+    </div>  <!-- field-items -->
+    
+
+    
+
+    
+
+    
+
+    
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      <a href="#device">device</a>
+      
+    </div>
+    
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    
+
+    
+
+    <h3 class="field-label">Responses</h3>
+    
+    <h4 class="field-label">200</h4>
+    The app information  was updated successfully.
+    
+    
+    <h4 class="field-label">404</h4>
+    No device with given id or no app with given id on a device.
+    
+    
+    <h4 class="field-label">500</h4>
+    Data base error or something else.
+    
+    
+  </div> <!-- method -->
+  <hr/>
+  
+  <div class="method"><a name="mashupExecute"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="post"><code class="huge"><span class="http-method">post</span> /mashups</code></pre></div>
+    <div class="method-summary">execute mashup (<span class="nickname">mashupExecute</span>)</div>
+    
+    <div class="method-notes">Executes the given mashup and reports the execution results.</div>
+
+    
+
+    
+
+    
+    <h3 class="field-label">Request body</h3>
+    <div class="field-items">
+      <div class="param">mashup (required)</div>
+
+      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; The mashup to be executed. </div>
+    </div>  <!-- field-items -->
+    
+
+    
+
+    
+
+    
+
+    
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    
+
+    
+
+    <h3 class="field-label">Responses</h3>
+    
+    <h4 class="field-label">200</h4>
+    Mashup executed successfully
+    
+    
+    <h4 class="field-label">400</h4>
+    Invalid mashup.
+    
+    
+  </div> <!-- method -->
+  <hr/>
+  
+  
+  
+  
+
+  <div class="up"><a href="#__Models">Up</a></div>
+  <h2><a name="__Models">Models</a></h2>
+  [ Jump to <a href="#__Methods">Methods</a> ]
+
+  <h2>Table of Contents</h2>
+  <ol>
+  
+  
+    <li><a href="#App"><code>App</code></a></li>
+  
+  
+  
+    <li><a href="#Class"><code>Class</code></a></li>
+  
+  
+  
+    <li><a href="#Device"><code>Device</code></a></li>
+  
+  
+  
+    <li><a href="#Error404"><code>Error404</code></a></li>
+  
+  
+  
+    <li><a href="#Error500"><code>Error500</code></a></li>
+  
+  
+  
+    <li><a href="#SwaggerDescription"><code>SwaggerDescription</code></a></li>
+  
+  
+  
+    <li><a href="#SwaggerFragment"><code>SwaggerFragment</code></a></li>
+  
+  
+  </ol>
+
+  
+  
+  <div class="model">
+    <h3 class="field-label"><a name="App">App</a> <a class="up" href="#__Models">Up</a></h3>
+    <div class="field-items">
+      <div class="param">name </div><div class="param-desc"><span class="param-type">String</span> application name</div>
+      
+      <div class="param">version </div><div class="param-desc"><span class="param-type">String</span> the application version</div>
+      
+      <div class="param">description </div><div class="param-desc"><span class="param-type">String</span> application description</div>
+      
+      <div class="param">author </div><div class="param-desc"><span class="param-type">String</span> </div>
+      
+      <div class="param">license </div><div class="param-desc"><span class="param-type">String</span> </div>
+      
+      <div class="param">classes </div><div class="param-desc"><span class="param-type">array[String]</span> Application classes that this app implements. Defines which kind of api the app offers.</div>
+      
+      <div class="param">id </div><div class="param-desc"><span class="param-type">String</span> Unique identifier for the deployment inside the device. Used to identify app in api.</div>
+      
+      <div class="param">status </div><div class="param-desc"><span class="param-type">String</span> deployment status running, stopped, error.</div>
+      
+      
+    </div>  <!-- field-items -->
+  </div>
+  
+  
+  
+  <div class="model">
+    <h3 class="field-label"><a name="Class">Class</a> <a class="up" href="#__Models">Up</a></h3>
+    <div class="field-items">
+      <div class="param">name </div><div class="param-desc"><span class="param-type">String</span> </div>
+      
+      <div class="param">description </div><div class="param-desc"><span class="param-type">String</span> </div>
+      
+      
+    </div>  <!-- field-items -->
+  </div>
+  
+  
+  
+  <div class="model">
+    <h3 class="field-label"><a name="Device">Device</a> <a class="up" href="#__Models">Up</a></h3>
+    <div class="field-items">
+      <div class="param">_id </div><div class="param-desc"><span class="param-type">String</span> Unique id used to identify devices in the system.</div>
+      
+      <div class="param">name </div><div class="param-desc"><span class="param-type">String</span> A human readable name for the device</div>
+      
+      <div class="param">manufacturer </div><div class="param-desc"><span class="param-type">String</span> </div>
+      
+      <div class="param">libraries </div><div class="param-desc"><span class="param-type">Object</span> Software libraries installed where key is the library name and value its version.</div>
+      
+      <div class="param">location </div><div class="param-desc"><span class="param-type">String</span> Where the device is located.</div>
+      
+      <div class="param">url </div><div class="param-desc"><span class="param-type">String</span> URL for the devices management api.</div>
+      
+      <div class="param">connected-devices </div><div class="param-desc"><span class="param-type">Object</span> information about connected devices such as sensors. attribute name is a device type and value has information about device like model</div>
+      
+      <div class="param">classes </div><div class="param-desc"><span class="param-type">array[String]</span> hardware capabilities offered by the device</div>
+      
+      <div class="param">apps </div><div class="param-desc"><span class="param-type">array[app]</span> applications deployed on the device</div>
+      
+      <div class="param">matchedApps </div><div class="param-desc"><span class="param-type">array[app]</span> This field is present only when querying devices with an app filter. In which case this lists apps matched by the filter.</div>
+      
+      
+    </div>  <!-- field-items -->
+  </div>
+  
+  
+  
+  <div class="model">
+    <h3 class="field-label"><a name="Error404">Error404</a> <a class="up" href="#__Models">Up</a></h3>
+    <div class="field-items">
+      <div class="param">message </div><div class="param-desc"><span class="param-type">String</span> </div>
+      
+      
+    </div>  <!-- field-items -->
+  </div>
+  
+  
+  
+  <div class="model">
+    <h3 class="field-label"><a name="Error500">Error500</a> <a class="up" href="#__Models">Up</a></h3>
+    <div class="field-items">
+      
+    </div>  <!-- field-items -->
+  </div>
+  
+  
+  
+  <div class="model">
+    <h3 class="field-label"><a name="SwaggerDescription">SwaggerDescription</a> <a class="up" href="#__Models">Up</a></h3>
+    <div class="field-items">
+      
+    </div>  <!-- field-items -->
+  </div>
+  
+  
+  
+  <div class="model">
+    <h3 class="field-label"><a name="SwaggerFragment">SwaggerFragment</a> <a class="up" href="#__Models">Up</a></h3>
+    <div class="field-items">
+      
+    </div>  <!-- field-items -->
+  </div>
+  
+  
+  </body>
+</html>
