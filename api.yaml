@@ -287,6 +287,18 @@ paths:
           description: Mashup executed successfully
         '400':
           description: Invalid mashup.
+  /devicecapabilities:
+    get:
+      summary: List device capabilities.
+      description: Lists all available device capabilities that are used to defnine which kind of hardware features a device has.
+      operationId: deviceCapabilityGet
+      responses:
+        '200':
+          description: List of device capability names and descriptions.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/deviceCapability'
 definitions:
   swaggerFragment:
     type: object
@@ -370,6 +382,13 @@ definitions:
         type: string
         description: deployment status running, stopped, error.
   class:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+  deviceCapability:
       type: object
       properties:
         name:
