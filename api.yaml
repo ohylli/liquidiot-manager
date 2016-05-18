@@ -58,7 +58,7 @@ paths:
           required: true
           type: string
         - name: api
-          description: A swagger fragment that defines the api offered by apps that implement this class.
+          description: A swagger fragment that defines the api offered by apps that implement this class. A field named x-device-capability can be used to attach the class to a device capability.
           in: body
           required: true
           schema:
