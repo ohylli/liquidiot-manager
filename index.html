@@ -212,6 +212,8 @@ font-style: italic;
   
   <li><a href="#deviceAdd"><code><span class="http-method">post</span> /devices</code></a></li>
   
+  <li><a href="#deviceCapabilityGet"><code><span class="http-method">get</span> /devicecapabilities</code></a></li>
+  
   <li><a href="#deviceGet"><code><span class="http-method">get</span> /devices/id/{id}</code></a></li>
   
   <li><a href="#deviceList"><code><span class="http-method">get</span> /devices</code></a></li>
@@ -297,9 +299,9 @@ font-style: italic;
     <div class="method-path">
     <a class="up" href="#__Methods">Up</a>
     <pre class="get"><code class="huge"><span class="http-method">get</span> /apis</code></pre></div>
-    <div class="method-summary">List all classes. (<span class="nickname">classList</span>)</div>
+    <div class="method-summary">List classes. (<span class="nickname">classList</span>)</div>
     
-    <div class="method-notes">Lists all classes with their names and a short description.</div>
+    <div class="method-notes">Lists classes with their names and a short description. You can get all classes or you can filter based on device capabilities.</div>
 
     
 
@@ -309,6 +311,13 @@ font-style: italic;
 
     
 
+    
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">devcap (optional)</div>
+
+      <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash; Include only classes that have the given device capability. Multiple instances with different values can be used. </div>
+    </div>  <!-- field-items -->
     
 
     
@@ -360,7 +369,7 @@ font-style: italic;
     <div class="field-items">
       <div class="param">api (required)</div>
 
-      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; A swagger fragment that defines the api offered by apps that implement this class. </div>
+      <div class="param-desc"><span class="param-type">Body Parameter</span> &mdash; A swagger fragment that defines the api offered by apps that implement this class. A field named x-device-capability can be used to attach the class to a device capability. </div>
     </div>  <!-- field-items -->
     
 
@@ -388,6 +397,10 @@ font-style: italic;
     
     <h4 class="field-label">200</h4>
     The class was created or updated successfully.
+    
+    
+    <h4 class="field-label">400</h4>
+    The x-device-capability field refers to a capability that is not in the system.
     
     
     <h4 class="field-label">500</h4>
@@ -504,6 +517,49 @@ font-style: italic;
     
     <h4 class="field-label">400</h4>
     error in adding the device.
+    
+    
+  </div> <!-- method -->
+  <hr/>
+  
+  <div class="method"><a name="deviceCapabilityGet"/>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /devicecapabilities</code></pre></div>
+    <div class="method-summary">List device capabilities. (<span class="nickname">deviceCapabilityGet</span>)</div>
+    
+    <div class="method-notes">Lists all available device capabilities that are used to defnine which kind of hardware features a device has.</div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      array[<a href="#deviceCapability">deviceCapability</a>]
+      
+    </div>
+    
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    
+
+    
+
+    <h3 class="field-label">Responses</h3>
+    
+    <h4 class="field-label">200</h4>
+    List of device capability names and descriptions.
     
     
   </div> <!-- method -->
@@ -947,11 +1003,19 @@ font-style: italic;
   
   
   
+    <li><a href="#DeviceCapability"><code>DeviceCapability</code></a></li>
+  
+  
+  
     <li><a href="#Error404"><code>Error404</code></a></li>
   
   
   
     <li><a href="#Error500"><code>Error500</code></a></li>
+  
+  
+  
+    <li><a href="#ErrorMessage"><code>ErrorMessage</code></a></li>
   
   
   
@@ -998,6 +1062,8 @@ font-style: italic;
       
       <div class="param">description </div><div class="param-desc"><span class="param-type">String</span> </div>
       
+      <div class="param">devcap </div><div class="param-desc"><span class="param-type">String</span> The name of the device capability attached to this class.</div>
+      
       
     </div>  <!-- field-items -->
   </div>
@@ -1034,6 +1100,19 @@ font-style: italic;
   
   
   <div class="model">
+    <h3 class="field-label"><a name="DeviceCapability">DeviceCapability</a> <a class="up" href="#__Models">Up</a></h3>
+    <div class="field-items">
+      <div class="param">name </div><div class="param-desc"><span class="param-type">String</span> </div>
+      
+      <div class="param">description </div><div class="param-desc"><span class="param-type">String</span> </div>
+      
+      
+    </div>  <!-- field-items -->
+  </div>
+  
+  
+  
+  <div class="model">
     <h3 class="field-label"><a name="Error404">Error404</a> <a class="up" href="#__Models">Up</a></h3>
     <div class="field-items">
       <div class="param">message </div><div class="param-desc"><span class="param-type">String</span> </div>
@@ -1047,6 +1126,17 @@ font-style: italic;
   <div class="model">
     <h3 class="field-label"><a name="Error500">Error500</a> <a class="up" href="#__Models">Up</a></h3>
     <div class="field-items">
+      
+    </div>  <!-- field-items -->
+  </div>
+  
+  
+  
+  <div class="model">
+    <h3 class="field-label"><a name="ErrorMessage">ErrorMessage</a> <a class="up" href="#__Models">Up</a></h3>
+    <div class="field-items">
+      <div class="param">message </div><div class="param-desc"><span class="param-type">String</span> </div>
+      
       
     </div>  <!-- field-items -->
   </div>
