@@ -77,6 +77,10 @@ paths:
           description: The class was created or updated successfully.
           schema:
             $ref: '#/definitions/swaggerFragment'
+        '400':
+          description: The x-device-capability field refers to a capability that is not in the system.
+          schema:
+            $ref: '#/definitions/errorMessage'
         '500':
             description: "server error"
             schema:
@@ -407,3 +411,8 @@ definitions:
           type: string
         description:
           type: string
+  errorMessage:
+    type: object
+    properties:
+      message:
+        type: string

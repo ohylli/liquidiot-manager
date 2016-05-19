@@ -9,8 +9,10 @@
 // manages classes and their api descriptions
 
 var express = require( 'express' );
-
 var router = express.Router();
+var _ = require( 'lodash' );
+
+var devcaps = require( './devicecapabilities' ).devcaps;
 
 // gets the names and descriptions of the classes
 router.get( '/', function ( req, res ) {
@@ -56,8 +58,20 @@ router.put( "/:class", function( req, res ) {
         description = req.body.info.description;
     }
     
+    var devcap = 'free-class';
+    if ( req.body['x-device-capability']) {
+        devcap = req.body['x-device-capability'];
+        devcaps = devcaps.map( function( item ) {
+           return item.name; 
+        });
+        
+        if ( !_.includes( devcaps, devcap ) ) {
+            return res.status( 400 ).send( { message: 'The class refers to device capability ' +devcap +' which does not exist in the system.' });
+        }
+    }
+    
     // object to be added
-    var api = { name: req.params.class, description: description, api: JSON.stringify( req.body ) };
+    var api = { name: req.params.class, description: description, devcap: devcap, api: JSON.stringify( req.body ) };
     // option for inserting a document if none match query
     var options = { upsert: true };
     db.collection( 'classes' ).updateOne( query, api, options, function ( err, result ) { 

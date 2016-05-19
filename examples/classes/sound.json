@@ -5,6 +5,7 @@
         "version": "1.0.0",
         "title": "makesSound"
     },
+    "x-device-capability": "canPlaySound",
     "paths": {
         "/sound": {
             "post": {
