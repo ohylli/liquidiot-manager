@@ -13,9 +13,18 @@ host: 130.230.142.101:3001
 paths:
   /apis:
     get:
-      summary: List all classes.
-      description: Lists all classes with their names and a short description.
+      summary: List classes.
+      description: Lists classes with their names and a short description. You can get all classes or you can filter based on device capabilities.
       operationId: classList
+      parameters:
+        - name: devcap
+          description: Response will contain a class that has the given device capability. Multiple instances with different values can be used.
+          in: query
+          type: array
+          collectionFormat: multi
+          items:
+            type: string
+          required: false
       responses:
         '200':
           description: Array of class names and descriptions
