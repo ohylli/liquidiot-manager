@@ -18,7 +18,7 @@ paths:
       operationId: classList
       parameters:
         - name: devcap
-          description: Response will contain a class that has the given device capability. Multiple instances with different values can be used.
+          description:  Include only classes that have the given device capability. Multiple instances with different values can be used.
           in: query
           type: array
           collectionFormat: multi
