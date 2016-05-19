@@ -17,9 +17,20 @@ var devcaps = require( './devicecapabilities' ).devcaps;
 // gets the names and descriptions of the classes
 router.get( '/', function ( req, res ) {
     var db = req.db;
-    // get only name and description
+    // get only name, description and device capability
     var project = { name: 1, description: 1, devcap: 1, '_id': 0  };
-    db.collection( 'classes' ).find({}).project( project ).toArray( function ( err, docs ) {
+    // filter by device capability if the devcap query parameter is present
+    var query = {};
+    if ( req.query.devcap ) {
+        // if we have only value convert to array for use in mongo db query
+        if ( typeof req.query.devcap == 'string' ) {
+            req.query.devcap = [ req.query.devcap ];
+        }
+        
+        query = { devcap: { $in: req.query.devcap }};
+    }
+    
+    db.collection( 'classes' ).find( query ).project( project ).toArray( function ( err, docs ) {
         if ( err ) {
             return res.status( 500 ).send( err );
         }
