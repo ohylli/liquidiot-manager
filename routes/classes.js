@@ -18,7 +18,7 @@ var devcaps = require( './devicecapabilities' ).devcaps;
 router.get( '/', function ( req, res ) {
     var db = req.db;
     // get only name and description
-    var project = { name: 1, description: 1, '_id': 0  };
+    var project = { name: 1, description: 1, devcap: 1, '_id': 0  };
     db.collection( 'classes' ).find({}).project( project ).toArray( function ( err, docs ) {
         if ( err ) {
             return res.status( 500 ).send( err );
