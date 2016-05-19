@@ -61,11 +61,11 @@ router.put( "/:class", function( req, res ) {
     var devcap = 'free-class';
     if ( req.body['x-device-capability']) {
         devcap = req.body['x-device-capability'];
-        devcaps = devcaps.map( function( item ) {
+        var devcapNames = devcaps.map( function( item ) {
            return item.name; 
         });
         
-        if ( !_.includes( devcaps, devcap ) ) {
+        if ( !_.includes( devcapNames, devcap ) ) {
             return res.status( 400 ).send( { message: 'The class refers to device capability ' +devcap +' which does not exist in the system.' });
         }
     }
