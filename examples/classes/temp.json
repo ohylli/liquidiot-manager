@@ -1,6 +1,6 @@
 {
     "swagger": "2.0",
-    "x-device-capability": "canMeasureTemperatur",
+    "x-device-capability": "canMeasureTemperature",
     "info": {
         "version": "0.1.0",
         "title": "measuresTemperature",
