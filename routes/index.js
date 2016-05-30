@@ -39,7 +39,7 @@ router.get('/', function(req, res) {
    // if we have an app query selector parse it in to mongodb query
    if ( req.query.app ) {
        try {
-          appQuery = css2mongo( req.query.app );
+          appQuery = css2mongo( req.query.app, true );
           // add the app query as an elemmath query
           dbQuery.apps = { $elemMatch: appQuery };
        }

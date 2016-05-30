@@ -40,7 +40,7 @@
 var slick = require('slick');
 var mongo = require('mongoskin');
 
-function cssToMongoQuery(css) {
+function cssToMongoQuery(css, isApp ) {
   if (typeof css === 'string') {
     css = slick.parse(css);
   }
@@ -49,17 +49,17 @@ function cssToMongoQuery(css) {
     return {};
   }
   if (css.length === 1) {
-    return exprToMongoQuery(css[0]);
+    return exprToMongoQuery(css[0], isApp );
   }
 
   var or = [];
   for (var i=0; i<css.length; i++) {
-    or.push(exprToMongoQuery(css[i]));
+    or.push(exprToMongoQuery(css[i]), isApp );
   }
   return {'$or': or};
 }
 
-function exprToMongoQuery(expr) {
+function exprToMongoQuery(expr, isApp ) {
   if (expr.length !== 1) {
     throw "ERROR: Multiple parts in an expressions doesn't make sense";
   }
@@ -69,23 +69,23 @@ function exprToMongoQuery(expr) {
   var and = [];
 
   if (part.id) {
-    and.push(idToMongoQuery(part.id));
+    and.push(idToMongoQuery(part.id, isApp ));
   }
 
   if (part.tag !== '*') {
-    and.push(tagToMongoQuery(part.tag));
+    and.push(tagToMongoQuery(part.tag, isApp));
   }
 
   if (part.classList) {
-    and.push(classesToMongoQuery(part.classList));
+    and.push(classesToMongoQuery(part.classList, isApp ));
   }
 
   if (part.attributes) {
-    and.push(attributesToMongoQuery(part.attributes));
+    and.push(attributesToMongoQuery(part.attributes, isApp));
   }
 
   if (part.pseudos) {
-    and.push(pseudosToMongoQuery(part.pseudos));
+    and.push(pseudosToMongoQuery(part.pseudos, isApp ));
   }
 
   if (and.length === 0) {
@@ -97,11 +97,20 @@ function exprToMongoQuery(expr) {
   return {$and: and};
 }
 
-function classesToMongoQuery(classes) {
+function classesToMongoQuery(classes, isApp) {
+    var value = {$all: classes};
+    var key = 'classes';
   if (classes.length === 1) {
-    return { classes: classes[0] };
+    value =  classes[0];
   }
-  return {classes: {$all: classes}};
+  
+  if ( isApp ) {
+      key = 'applicationInterfaces';
+  }
+  
+  var returnObj = {};
+  returnObj[key] = value;
+  return returnObj;
 }
 
 function idToMongoQuery(id) {
