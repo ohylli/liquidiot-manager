@@ -224,14 +224,14 @@ router.get( '/:devid/apps/:appid/api', function ( req, res ) {
         }
         
         // get the class api descriptions the app refers to
-        var query = { name: { $in: app.classes } };
+        var query = { name: { $in: app.applicationInterfaces } };
         db.collection( 'classes' ).find( query ).toArray( function ( err, classes ) {
             if ( err ) {
                 return res.status( 500 ).send( err );
             }
             
             // we should have all of the classes the app refers to
-            if ( classes.length != app.classes.length ) {
+            if ( classes.length != app.applicationInterfaces.length ) {
                 return res.status( 404 ).send( { message: 'The app references classes that do not exist.' } );
             }
             
