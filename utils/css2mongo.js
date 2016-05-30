@@ -81,11 +81,11 @@ function exprToMongoQuery(expr, isApp ) {
   }
 
   if (part.attributes) {
-    and.push(attributesToMongoQuery(part.attributes, isApp));
+    and.push(attributesToMongoQuery(part.attributes));
   }
 
   if (part.pseudos) {
-    and.push(pseudosToMongoQuery(part.pseudos, isApp ));
+    and.push(pseudosToMongoQuery(part.pseudos ));
   }
 
   if (and.length === 0) {
@@ -113,7 +113,7 @@ function classesToMongoQuery(classes, isApp) {
   return returnObj;
 }
 
-function idToMongoQuery(id) {
+function idToMongoQuery(id, isApp ) {
   try {
     id = new mongo.ObjectId(id);
   }
@@ -122,10 +122,14 @@ function idToMongoQuery(id) {
     // Let's use the id as is.
     // (The query will most likely return empty...)
   }
+  
+  if ( isApp ) {
+      return { id: id };
+  }
   return {_id: id};
 }
 
-function tagToMongoQuery(tag) {
+function tagToMongoQuery(tag, isApp) {
   return {type: tag};
 }
 
