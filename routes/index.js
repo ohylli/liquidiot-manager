@@ -223,29 +223,29 @@ router.get( '/:devid/apps/:appid/api', function ( req, res ) {
             return res.status( 404 ).send( { message: 'Device with id ' +devid +' does not have an app with id ' +appid } );
         }
         
-        // get the class api descriptions the app refers to
+        // get the interface descriptions the app refers to
         var query = { name: { $in: app.applicationInterfaces } };
-        db.collection( 'classes' ).find( query ).toArray( function ( err, classes ) {
+        db.collection( 'classes' ).find( query ).toArray( function ( err, interfaces ) {
             if ( err ) {
                 return res.status( 500 ).send( err );
             }
             
-            // we should have all of the classes the app refers to
-            if ( classes.length != app.applicationInterfaces.length ) {
-                return res.status( 404 ).send( { message: 'The app references classes that do not exist.' } );
+            // we should have all of the interfaces the app refers to
+            if ( interfaces.length != app.applicationInterfaces.length ) {
+                return res.status( 404 ).send( { message: 'The app references interfaces that do not exist.' } );
             }
             
-            var api = buildApiDesc( device, app, classes );
+            var api = buildApiDesc( device, app, interfaces );
             res.send( api );
         });
     });
 });
 
-// builds a api description for the given app, running on the device from the array of classes
-function buildApiDesc( device, app, classes ) {
+// builds a api description for the given app, running on the device from the array of interfaces
+function buildApiDesc( device, app, interfaces ) {
     var api = {}; // build the combined description to this object
     // get only the api descriptions into an array as objects
-    var apis = classes.map( function ( item ) {
+    var apis = interfaces.map( function ( item ) {
         return JSON.parse( item.api );
     });
     
@@ -261,6 +261,8 @@ function buildApiDesc( device, app, classes ) {
     api.info.description = app.description;
     api.host = url.parse( device.url ).host;
     api.basePath = '/app/' +app.id +'/api';
+    // this is not needed here so remove it
+    api['x-device-capability'] = undefined;
     return api;
 }
 
