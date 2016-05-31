@@ -22,7 +22,7 @@ var mongoURL = process.env.mongourl || 'mongodb://localhost/dms';
 var db = mongo.db( mongoURL, {native_parser:true});
 
 var devices = require('./routes/index');
-var classes = require( './routes/classes' );
+var interfaces = require( './routes/interfaces' );
 var mashup = require( './routes/mashup' );
 var devcap = require( './routes/devicecapabilities' ).router;
 
@@ -70,7 +70,7 @@ app.use(function(req, res, next){
 });
 
 app.use('/', devices );
-app.use( '/apis', classes );
+app.use( '/apis', interfaces );
 app.use('/devices', devices );
 app.use( '/mashups', mashup );
 app.use( '/devicecapabilities', devcap );
