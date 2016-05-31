@@ -225,7 +225,7 @@ router.get( '/:devid/apps/:appid/api', function ( req, res ) {
         
         // get the interface descriptions the app refers to
         var query = { name: { $in: app.applicationInterfaces } };
-        db.collection( 'classes' ).find( query ).toArray( function ( err, interfaces ) {
+        db.collection( 'apis' ).find( query ).toArray( function ( err, interfaces ) {
             if ( err ) {
                 return res.status( 500 ).send( err );
             }

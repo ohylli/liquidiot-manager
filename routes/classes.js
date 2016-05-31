@@ -6,7 +6,7 @@
  * Otto Hylli <otto.hylli@tut.fi>
 */
 
-// manages classes and their api descriptions
+// manages Application interface descriptions
 
 var express = require( 'express' );
 var router = express.Router();
@@ -14,7 +14,7 @@ var _ = require( 'lodash' );
 
 var devcaps = require( './devicecapabilities' ).devcaps;
 
-// gets the names and descriptions of the classes
+// gets the names and descriptions of the interfaces
 router.get( '/', function ( req, res ) {
     var db = req.db;
     // get only name, description and device capability
@@ -30,7 +30,7 @@ router.get( '/', function ( req, res ) {
         query = { devcap: { $in: req.query.devcap }};
     }
     
-    db.collection( 'classes' ).find( query ).project( project ).toArray( function ( err, docs ) {
+    db.collection( 'apis' ).find( query ).project( project ).toArray( function ( err, docs ) {
         if ( err ) {
             return res.status( 500 ).send( err );
         }
@@ -39,17 +39,17 @@ router.get( '/', function ( req, res ) {
     });
 });
 
-// get the api description of a class
-router.get( '/:class', function( req, res ) {
+// get the api description of an interface
+router.get( '/:interface', function( req, res ) {
     var db = req.db;
-    var query = { name: req.params.class };
-    db.collection( 'classes' ).findOne( query, function ( err, result ) {
+    var query = { name: req.params.interface };
+    db.collection( 'apis' ).findOne( query, function ( err, result ) {
         if ( err ) {
             return res.status( 500 ).send( err );
         }
         
         if ( result == null ) {
-            return res.status( 404 ).send( { 'message': 'class named ' +req.params.class +' not found.' } );
+            return res.status( 404 ).send( { 'message': 'interface named ' +req.params.interface +' not found.' } );
         }
         
         // have to set this because response body is only a string
@@ -58,10 +58,10 @@ router.get( '/:class', function( req, res ) {
     });
 });
 
-// create or update a class api description
-router.put( "/:class", function( req, res ) {
+// create or update an interface  description
+router.put( "/:interface", function( req, res ) {
     var db = req.db;
-    var query = { 'name': req.params.class };
+    var query = { 'name': req.params.interface };
     
     // try to get a description from the api specification
     var description = '';
@@ -77,15 +77,15 @@ router.put( "/:class", function( req, res ) {
         });
         
         if ( !_.includes( devcapNames, devcap ) ) {
-            return res.status( 400 ).send( { message: 'The class refers to device capability ' +devcap +' which does not exist in the system.' });
+            return res.status( 400 ).send( { message: 'The interface refers to device capability ' +devcap +' which does not exist in the system.' });
         }
     }
     
     // object to be added
-    var api = { name: req.params.class, description: description, devcap: devcap, api: JSON.stringify( req.body ) };
+    var api = { name: req.params.interface, description: description, devcap: devcap, api: JSON.stringify( req.body ) };
     // option for inserting a document if none match query
     var options = { upsert: true };
-    db.collection( 'classes' ).updateOne( query, api, options, function ( err, result ) { 
+    db.collection( 'apis' ).updateOne( query, api, options, function ( err, result ) { 
         if ( err ) {
             return res.status( 500 ).send( err );
         }
@@ -94,17 +94,17 @@ router.put( "/:class", function( req, res ) {
     });
 });
 
-// deletes a class api description
-router.delete( '/:class', function ( req, res ) {
+// deletes an interface description
+router.delete( '/:interface', function ( req, res ) {
     var db = req.db;
-    var query = { name: req.params.class };
-    db.collection( 'classes' ).findOneAndDelete( query, function ( err, result ) {
+    var query = { name: req.params.interface };
+    db.collection( 'apis' ).findOneAndDelete( query, function ( err, result ) {
         if ( err ) {
             return res.status( 500 ).send( err );
         }
         
         if ( result.lastErrorObject.n == 0 ) {        
-            return res.status( 404 ).send( { 'message': 'class named ' +req.params.class +' not found.' } );
+            return res.status( 404 ).send( { 'message': 'interface named ' +req.params.interface +' not found.' } );
         }
         
         // set content type because we are sending just a string
