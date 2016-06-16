@@ -17,23 +17,29 @@ var router = express.Router();
 
 // permitted operations in comparisons
 var comparisonOperators = [ '<', '>', '==', '>=', '<=', '!=' ];
+var collectionName = 'orchestration';
 
 // add the orchestration send in the request to the database
 router.post( '/orchestrations', function( req, res ) {
     var db = req.db;
     var orc = req.body;
     var result = validateOrchestration( orc );
+    
+    // check that the orchestration is valid and add only if it is
     if ( !result.valid ) {
         return res.status( 400 ).send( { message: result.reason });
     }
     
-    db.collection( 'orchestration' ).insert( orc, function ( err, result ) {
+    db.collection( collectionName ).insert( orc, function ( err, result ) {
         if ( err ) {
             res.status( 500 ).send( err );
         }
         
-        console.log( result );
-        res.send();
+        if ( result.insertedCount != 1 ) {
+            return res.status( 500 ).send( { message: 'Failed to insert to database.'});
+        }
+        
+        res.send( result.ops[0] );
     });
 });
 
