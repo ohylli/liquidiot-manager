@@ -23,7 +23,7 @@ var db = mongo.db( mongoURL, {native_parser:true});
 
 var devices = require('./routes/index');
 var interfaces = require( './routes/interfaces' );
-var mashup = require( './routes/mashup' );
+var orchestration = require( './routes/orchestration' );
 var devcap = require( './routes/devicecapabilities' ).router;
 
 var app = express();
@@ -72,7 +72,7 @@ app.use(function(req, res, next){
 app.use('/', devices );
 app.use( '/apis', interfaces );
 app.use('/devices', devices );
-app.use( '/mashups', mashup );
+app.use( '/orchestration', orchestration );
 app.use( '/devicecapabilities', devcap );
 
 // catch 404 and forward to error handler
