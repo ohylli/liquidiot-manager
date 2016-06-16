@@ -6,6 +6,8 @@
  * Hylli <otto.hylli@tut.fi>
  */
 
+// this file contains features for managing and executing orchestrations
+
 var express = require( 'express' );
 var request = require( 'request' );
 var Swagger = require( 'swagger-client' );
@@ -15,6 +17,25 @@ var router = express.Router();
 
 // permitted operations in comparisons
 var comparisonOperators = [ '<', '>', '==', '>=', '<=', '!=' ];
+
+// add the orchestration send in the request to the database
+router.post( '/orchestrations', function( req, res ) {
+    var db = req.db;
+    var orc = req.body;
+    var result = validateOrchestration( orc );
+    if ( !result.valid ) {
+        return res.status( 400 ).send( { message: result.reason });
+    }
+    
+    db.collection( 'orchestration' ).insert( orc, function ( err, result ) {
+        if ( err ) {
+            res.status( 500 ).send( err );
+        }
+        
+        console.log( result );
+        res.send();
+    });
+});
 
 // executes the mashup send in the post request body
 router.post( '/', function( req, res ) {
@@ -32,6 +53,22 @@ router.post( '/', function( req, res ) {
         res.send( body );
     });
 });
+
+// validates the given orchestration object
+// return value is an object with a boolean value field named valid
+// if the value is false the object contains a string attributed named reason which explains 
+// what is wrong with the orchestration
+function validateOrchestration( orchestration ) {
+    var result = { valid: true };
+    if ( !orchestration.name ) {
+        result.valid = false;
+        result.reason = "The orchestration doesn't have a name.";
+        return result;
+    }
+    
+    // todo better validation needed may be use JSON schema and additional validation
+    return result;
+}
 
 // executes the given mashup description object
 // expressApp is the express application whose information is used
