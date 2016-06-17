@@ -43,6 +43,20 @@ router.post( '/orchestrations', function( req, res ) {
     });
 });
 
+// get list of orchestrations that includes name, description and _id
+router.get( '/orchestrations', function ( req, res ) {
+   var db = req.db;
+   // get only id, name and description
+   var project = { name: 1, description: 1, '_id': 1 };
+   db.collection( collectionName ).find().project( project ).toArray( function ( err, results ) {
+       if ( err ) {
+           return res.status( 500 ).send( err );
+       }
+       
+       res.send( results );
+   });
+});
+
 // executes the mashup send in the post request body
 router.post( '/', function( req, res ) {
     executeMashup( req.body, req.app, function ( err, result ) {
