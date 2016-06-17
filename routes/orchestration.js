@@ -73,6 +73,22 @@ router.get( '/orchestrations/:id', function( req, res ) {
     });
 });
 
+// delete the orchestration by id
+router.delete( '/orchestrations/:id', function ( req, res ) {
+    var db = req.db;
+    db.collection( collectionName ).removeById( req.params.id, function ( err, result ) {
+        if ( err ) {
+            return res.status( 500 ).send( err );
+        }
+        
+        if ( result !== 1 ) {
+            return res.status( 404 ).send( { message: 'Orchestration with id ' +req.params.id +' not found.' });
+        }
+        
+        return res.send( { 'status': 'ok' } );
+    }); 
+});
+
 // executes the mashup send in the post request body
 router.post( '/', function( req, res ) {
     executeMashup( req.body, req.app, function ( err, result ) {
