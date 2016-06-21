@@ -12,6 +12,8 @@ var express = require( 'express' );
 var request = require( 'request' );
 var Swagger = require( 'swagger-client' );
 var _ = require( 'lodash' );
+var mongo = require( 'mongoskin' );
+var toObjectID = mongo.helper.toObjectID;
 
 var router = express.Router();
 
@@ -87,6 +89,24 @@ router.delete( '/orchestrations/:id', function ( req, res ) {
         
         return res.send( { 'status': 'ok' } );
     }); 
+});
+
+// update orchestration's information
+router.put( '/orchestrations/:id', function ( req, res ) {
+    var db = req.db;
+    var query = { '_id': toObjectID( req.params.id ) };
+    db.collection( collectionName ).update( query, req.body, function ( err, result ) {
+        if ( err ) {
+            return res.status( 500 ).send( err );
+        }
+
+        // did the query find anything
+        if ( result.result.n == 0 ) {
+            return res.status( 404 ).send( { message: 'Orchestration with id ' +req.params.id +' not found.' } );
+        }
+        
+        return res.send( req.body );
+    });
 });
 
 // executes the mashup send in the post request body
