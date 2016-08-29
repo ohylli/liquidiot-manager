@@ -152,10 +152,17 @@ function executeMashup( mashup, expressApp, done ) {
     // information about what actual apps matched the dynamic app definitions
     var dynamicApps = {};
     var count = 0; // how many dynamic apps, used in counting callbacks
+    mashup.appMap = {};
     // find out what actual apps correspond to the dynamic app queries
     mashup.apps.forEach( function ( app ) {
-        if ( typeof app == 'object' ) {
-            // this is a dynamic app not a predefined api url
+        if (typeof app == 'object' && app.api ) {
+            mashup.appMap[app.id] = app;
+            dynamicApps[app.id] = [ app.api ];
+        }
+        
+        else if ( typeof app == 'object' ) {
+            mashup.appMap[app.id] = app;
+            // this is a dynamic app group not a predefined api url
             count++; // one more dynamic app to process
             // query parameters for the request that gets the apps
             var query = {};
@@ -236,6 +243,7 @@ function executeMashup( mashup, expressApp, done ) {
 
         // get clients for dynamically defined applications
         _.forEach( dynamicApps, function( urls, id ) {
+            var appGroup = mashup.appMap[ id ];
             // for saving the clients for this dynamic app definition
             // the id is the key
             clients[ id ] = [];
@@ -244,6 +252,12 @@ function executeMashup( mashup, expressApp, done ) {
                 var clientPromise = new Swagger( { url: url, usePromise: true } );
                 clientPromises.push( clientPromise );
                 clientPromise.then( function( client ) {
+                    if ( appGroup.auth ) {
+                        if ( appGroup.auth.type == 'basic' ) {
+                            var auth = new Swagger.PasswordAuthorization( appGroup.auth.username, appGroup.auth.password );
+                            client.clientAuthorizations.add( 'basicAuth',  auth );
+                        }
+                    }
                    clients[ id ].push( client ); 
                 });
             });
