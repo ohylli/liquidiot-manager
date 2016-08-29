@@ -199,16 +199,17 @@ function executeMashup( mashup, expressApp, done ) {
                 }
                 
                 count--; // one dynamic app processed
+                var apis = []; // api description urls
+                
                 // for each device get the apps that matched the query and build the url for getting the app's
                 // api description
                 body.forEach( function( device ) {
-                    var apis = []; // api urls
                     device.matchedApps.forEach( function ( deviceApp ) {
                         apis.push( url +'/' +device._id +'/apps/' +deviceApp.id +'/api' );
                     });
-                    
-                    dynamicApps[app.id] = apis;
                 });
+                
+                dynamicApps[app.id] = apis;
                 
                 if ( count == 0 ) {
                     // all dynamic apps processed
