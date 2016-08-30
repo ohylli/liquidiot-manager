@@ -333,7 +333,23 @@ function executeMashup( mashup, expressApp, done ) {
         var operationClients = clients[operation.app];
 
         var operationPromises = operationClients.map( function( client ) {
-            return client[operation.tag][operation.operationId]( {}, {} )
+            var params = operation.params || {}; // parameters for the operation
+            if ( input ) {
+                function setInput( value, key, object ) {
+                    if ( typeof value == 'object' ) {
+                        _.forEach( value, setInput );
+                    }
+                    
+                    else if ( value == '$input' ) {
+                        object[key] = input.value.value;
+                    }
+                }
+                
+                _.forEach( params, setInput );
+                // params.data[0].v = input.value.value;
+            }
+            
+            return client[operation.tag][operation.operationId]( params, {} )
             .then( function ( res ) {
                 // save the value from the response  to the operation's output variable if given
                 if ( output ) {
