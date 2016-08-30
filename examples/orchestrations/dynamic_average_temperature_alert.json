@@ -7,7 +7,7 @@
        "device": "[location=TE113]"},
     { "id": "soundapp",
       "app": ".playSound",
-      "device": "#56ebc69bd501e1db2f0aa006" }
+      "device": "#57bebba6ad1b3a59065e48dd" }
   ],
   "variables": {
     "temperatures": {
