@@ -1,0 +1,78 @@
+{
+  "name": "averageTemperatureAlert",
+  "description": "Calculates the average temperature in room TE113, sends it to IoT-Ticket and plays a sound alert if the average is over 20.",
+  "apps": [
+    {
+      "id": "temperatureapps",
+      "app": ".measureTemperature",
+      "device": "[location=TE113]"
+    },
+    {
+      "id": "soundapp",
+      "app": ".playSound",
+      "device": "#57bebba6ad1b3a59065e48dd"
+    },
+    {
+      "id": "iot-ticket",
+      "api": "http://localhost:3001/iot-ticket.yaml",
+      "auth": {
+        "type": "basic",
+        "username": "ohylli",
+        "password": "xxxxxxxxx"
+      }
+    }
+  ],
+  "variables": {
+    "temperatures": {
+      "type": "Array",
+      "item": "Number"
+    },
+    "averageTemp": {
+      "type": "Number"
+    }
+  },
+  "components": [
+    {
+      "type": "operation",
+      "app": "temperatureapps",
+      "output": "temperatures",
+      "tag": "temperature",
+      "operationId": "temperatureGET"
+    },
+    {
+      "type": "average",
+      "input": "temperatures",
+      "output": "averageTemp"
+    },
+    {
+      "type": "operation",
+      "app": "iot-ticket",
+      "input": "averageTemp",
+      "tag": "default",
+      "operationId": "writeData",
+      "params": {
+        "deviceId": "aea3bf8164fb4ee48b0d36ff86712e78",
+        "data": [
+          {
+            "name": "temperature_alert",
+            "v": "$input"
+          }
+        ]
+      }
+    },
+    {
+      "type": "if",
+      "operator": ">",
+      "input1": "averageTemp",
+      "value": 20,
+      "then": [
+        {
+          "type": "operation",
+          "app": "soundapp",
+          "tag": "sound",
+          "operationId": "makeSound"
+        }
+      ]
+    }
+  ]
+}
