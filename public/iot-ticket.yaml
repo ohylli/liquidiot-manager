@@ -1,0 +1,46 @@
+swagger: '2.0'
+info:
+  title: IoT Ticket
+  version: "0.1"
+host: my.iot-ticket.com
+basePath: /api/v1
+schemes:
+   - https
+securityDefinitions:
+   basicAuth:
+      type: basic
+security:
+   - basicAuth: []
+paths:
+   /process/write/{deviceId}/:
+      post:
+         summary: Send data.
+         operationId: writeData
+         parameters:
+            - name: deviceId
+              description: id of a device
+              in: path
+              type: string
+              required: true
+            - name: data
+              in: body
+              required: true
+              schema:
+                 $ref: '#/definitions/data'
+                 
+         responses:
+            '200':
+               description: data added succesfully
+               schema:
+                  type: object
+            
+definitions:
+  data:
+     type: array
+     items:
+        type: object
+        properties:
+           name:
+             type: string
+           v:
+              type: number
