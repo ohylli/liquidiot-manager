@@ -20,13 +20,30 @@ var toObjectID = mongo.helper.toObjectID;
 // can be filtered with a device selector string as a query parameter named q
 router.get('/', function(req, res) {
     var db = req.db;
-    var devQuery = req.query.device || req.query.q;
-    var dbQuery = {}; // mongo db query for getting the devices
+    var queries = [];
+
+    var operations = {
+        or: 'or',
+	and: 'and'
+    };
+
+    var operation = operations.and;
+
+    if(req.query.operation == operations.or) {
+	operation = operations.or;
+    }
+
+
+    //var devQuery = req.query.device || req.query.q;
+    //var dbQuery = {}; // mongo db query for getting the devices
     // if the request has a query parameter containing a device selector string
     // parse it into a mongodb query
-    if ( devQuery ) {
+    var devQuery = null;
+    if ( req.query.device ) {
        try {
-          dbQuery = css2mongo( devQuery );
+          devQuery = css2mongo( req.query.device );
+	  console.log(devQuery);
+	  queries.push(devQuery);
        }
        
        catch ( error ) {
@@ -35,13 +52,15 @@ router.get('/', function(req, res) {
        }
    }
    
-   var appQuery = null; // app specific query part of the mongodb query for devices
+   var q = null; // app specific query part of the mongodb query for devices
    // if we have an app query selector parse it in to mongodb query
    if ( req.query.app ) {
        try {
-          appQuery = css2mongo( req.query.app, true );
+	  //var appQuery = {};
+          q = css2mongo( req.query.app, true );
           // add the app query as an elemmath query
-          dbQuery.apps = { $elemMatch: appQuery };
+          var appQuery = { apps: { $elemMatch: q } };
+	  queries.push(appQuery);
        }
        
        catch ( error ) {
@@ -49,22 +68,68 @@ router.get('/', function(req, res) {
           return;
        }
        
-       console.log( JSON.stringify( dbQuery ));
+       //console.log( JSON.stringify( dbQuery ));
    }
+
+    var dbQuery = {};
+    if(queries.length === 1){
+        dbQuery = queries[0];
+    } else if (queries.length === 2) {
+	if(operation == operations.or) {
+            dbQuery = {$or: queries};
+	} else {
+	    queries[0].apps = queries[1].apps;
+	    dbQuery = queries[0];
+	}
+    }
+       console.log(  dbQuery );
    
     db.collection('device').find( dbQuery ).toArray(function(err, items){
         if(err){
             res.status(400).send(err.toString());
         } else {
-            // if we had an app query for each device add a new attribute to the returned document
-            // that will contain only those apps that matched the query
-            if ( appQuery ) {
-                _.each( items, function ( device ) {
-                    device.matchedApps = sift( appQuery, device.apps );
-                });
-            }
+	    var devIds = [];
+
+	    if(devQuery) {
+	    	db.collection('device').find( devQuery ).toArray(function(err, devs){
+		    if(err){
+		    	res.status(400).send(err.toString());
+		    } else {
+
+			console.log(devs);
+			devIds = devs.map(function(dev){
+			    return dev._id.toString();
+			});
+			console.log(devIds);
+			
+
+		        if ( q ) {
+		    	    _.each( items, function ( device ) {
+			        if(devIds.indexOf(device._id.toString()) === -1){
+				    device.isQueried = false;
+			        } else {
+				    device.isQueried = true;
+			        }
+			        device.matchedApps = sift( q, device.apps );
+			    });
+		        }
             
-            res.status(200).send( items );
+                        res.status(200).send( items );
+		    }
+	    	});
+	    } else {
+	    
+		// if we had an app query for each device add a new attribute to the returned document
+		// that will contain only those apps that matched the query
+		if ( q ) {
+		    _.each( items, function ( device ) {
+		        device.isQueried = false;
+		    	device.matchedApps = sift( q, device.apps );
+		    });
+	        }
+		    
+	        res.status(200).send( items );
+	    }
         }
     });
 });

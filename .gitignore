@@ -9,3 +9,7 @@ npm-debug.log
 /dump/
 .project
 /*.txt
+err.log
+out.log
+start.sh
+stop.sh
