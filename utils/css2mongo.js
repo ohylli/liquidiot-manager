@@ -54,7 +54,7 @@ function cssToMongoQuery(css, isApp ) {
 
   var or = [];
   for (var i=0; i<css.length; i++) {
-    or.push(exprToMongoQuery(css[i]), isApp );
+    or.push(exprToMongoQuery(css[i], isApp ));
   }
   return {'$or': or};
 }
@@ -114,6 +114,11 @@ function classesToMongoQuery(classes, isApp) {
 }
 
 function idToMongoQuery(id, isApp ) {
+
+  if ( isApp ) {
+      return { id: parseInt(id) };
+  }
+
   try {
     id = new mongo.ObjectId(id);
   }
@@ -121,10 +126,6 @@ function idToMongoQuery(id, isApp ) {
     // id was not a valid MongoDB ObjectId
     // Let's use the id as is.
     // (The query will most likely return empty...)
-  }
-  
-  if ( isApp ) {
-      return { id: id };
   }
   return {_id: id};
 }

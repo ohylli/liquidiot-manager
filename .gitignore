@@ -2,3 +2,8 @@
 *~
 *.swp
 npm-debug.log
+dump/
+err.log
+out.log
+start.sh
+stop.sh
