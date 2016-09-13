@@ -86,7 +86,8 @@ router.post('/', function(req, res){
           // contains the mapping information between device types and classes
           var deviceType2class = {
              speaker: 'canPlaySound',
-             'temp-sensor': 'canMeasureTemperature'
+             'temp-sensor': 'canMeasureTemperature',
+	     led : 'canTurnLight'
           };
           
           if ( deviceType2class[deviceType] ) {
