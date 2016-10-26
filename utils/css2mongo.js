@@ -190,9 +190,9 @@ function makeLigalAttrValue(attrValue) {
     }
 
     if(parts[0] == 'lt'){
-      q.$lt = parseInt(parts[1]);
+      q.$lt = Number(parts[1]);
     } else if(parts[0] == 'gt'){
-      q.$gt = parseInt(parts[1]);
+      q.$gt = Number(parts[1]);
     } else {
       throw "ERROR: only lt and gt operators are allowed.";
     }
