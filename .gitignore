@@ -13,3 +13,4 @@ err.log
 out.log
 start.sh
 stop.sh
+/dump-dev/

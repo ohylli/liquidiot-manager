@@ -147,6 +147,11 @@ function attrToMongoQuery(attr) {
   if (op === '=') {
     q[attr.name] = attr.value;
   }
+  else if (op === '*=') {
+    var regex = {};
+    regex.$regex = '.*' + attr.value + '.*';
+    q[attr.name] = regex;
+  }
   else {
     // TODO: other operators
     throw "Unknown operator: " + attr.operator;
