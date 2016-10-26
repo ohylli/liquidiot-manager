@@ -146,12 +146,12 @@ router.post('/', function(req, res){
     // add clas canPlaySound.
     // also add connected device's information as attributes
     // for example if speaker has a model adds that as an attribute named speaker-model
-    if ( device['connected-devices'] ) {
-       _.each( device['connected-devices'], function ( deviceAttrs, deviceType ) {
+    if ( device['connectedDevices'] ) {
+       _.each( device['connectedDevices'], function ( deviceAttrs, deviceType ) {
           // contains the mapping information between device types and classes
           var deviceType2class = {
              speaker: 'canPlaySound',
-             'temp-sensor': 'canMeasureTemperature',
+             tempSensor: 'canMeasureTemperature',
 	     led : 'canTurnLight'
           };
           
@@ -339,11 +339,11 @@ router.get("/functionality?", function(req, res){
     var speaker = req.query.speaker;
     var qs = "";
     if(tempSensor && speaker){
-        qs = {"connected-devices": {"temp-sensor": {"model": tempSensor}, "speaker": {"model": speaker} } };
+        qs = {"connectedDevices": {"tempSensor": {"model": tempSensor}, "speaker": {"model": speaker} } };
     } else if(tempSensor) {
-        qs = {"connected-devices": {"temp-sensor": {"model": tempSensor} } };
+        qs = {"connectedDevices": {"tempSensor": {"model": tempSensor} } };
     } else if(speaker) {
-        qs = {"connected-devices": {"speaker": {"model": speaker} } };
+        qs = {"connectedDevices": {"speaker": {"model": speaker} } };
     } else { 
         //qs = {"connected-devices": {"temp-sensor": {"model": tempSensor}, "speaker": {"model": speaker} } };
         qs = {};

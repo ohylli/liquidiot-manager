@@ -142,10 +142,14 @@ function attributesToMongoQuery(attrs) {
 }
 
 function attrToMongoQuery(attr) {
+
+  attr.name = toEmbeddedDocument(attr.name);
+
   var q = {};
   var op = attr.operator;
   if (op === '=') {
-    q[attr.name] = attr.value;
+    //q[attr.name] = attr.value;
+    q[attr.name] = makeLigalAttrValue(attr.value);
   }
   else if (op === '*=') {
     var regex = {};
@@ -157,6 +161,70 @@ function attrToMongoQuery(attr) {
     throw "Unknown operator: " + attr.operator;
   }
   return q;
+}
+
+// in mongodb, embedded document is in the form of js objects,
+// e.g, 'person' is an embedded document here: [ _id: 1, person {name: "farshad", age: 27}].
+// mongodb query should be like this: db.collection.find({"person.name":"farshad"})
+// css selectors does not allow dot notation. So, we assumne 'person-name' represents 'name' field of 'person' embedded documents.
+// This function tranforms 'person-name' to 'person.name'
+function toEmbeddedDocument(attrName) {
+  return attrName.split('-').join('.');
+}
+
+
+// This function converts attribute values to legal mongodb queries.
+// For example, [location=lt 12 gt 4]   ---> {location: { '$lt': 12, '$gt': 5 }}
+function makeLigalAttrValue(attrValue) {
+
+  var q = {};
+  var parts = attrValue.split(' ');
+  if(parts.length == 1){
+    return isNaN(parts[0]) ? attrValue : Number(attrValue);
+    //return attrValue;
+  }
+  else if(parts.length == 2) {
+
+    if(isNaN(parts[1])){
+      throw "ERROR: \"" + parts[1] + "\" is not a number.";
+    }
+
+    if(parts[0] == 'lt'){
+      q.$lt = parseInt(parts[1]);
+    } else if(parts[0] == 'gt'){
+      q.$gt = parseInt(parts[1]);
+    } else {
+      throw "ERROR: only lt and gt operators are allowed.";
+    }
+
+    return q;
+  }
+  else if(parts.length == 4) {
+
+    if(isNaN(parts[1]) || isNaN(parts[3])){
+      throw "ERROR: \"" + parts[1] + "\" or/and \"" + parts[3]  + "\" is/are not (a) number(s).";
+    }
+
+    if(parts[0] == 'lt'){
+      q.$lt = Number(parts[1]);
+    } else if(parts[0] == 'gt'){
+      q.$gt = Number(parts[1]);
+    } else {
+      throw "ERROR: only lt and gt operators are allowed.";
+    }
+
+    if(parts[2] == 'lt'){
+      q.$lt = Number(parts[3]);
+    } else if(parts[2] == 'gt'){
+      q.$gt = Number(parts[3]);
+    } else {
+      throw "ERROR: only lt and gt operators are allowed.";
+    }
+
+    return q;
+  } else {
+    throw "ERROR: \"" + attrValue + "\" is an invalid input.";
+  }
 }
 
 function pseudosToMongoQuery(pseudos) {
