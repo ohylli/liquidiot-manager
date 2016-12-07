@@ -238,6 +238,8 @@ function pseudoToMongoQuery(pseudo) {
   if (pseudo.name === 'not' && pseudo.value) {
     // http://stackoverflow.com/a/32972463
     return {$nor: [cssToMongoQuery(pseudo.value)]};
+  } else if (pseudo.name === 'matches' && pseudo.value) {
+    return cssToMongoQuery(pseudo.value);
   }
   // TODO: other pseudo classes
   throw "Unknown pseudo: " + pseudo.name;
