@@ -13,6 +13,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var rp = require('request-promise');
 
 var mongo = require('mongoskin');
 //var monk = require('monk');
@@ -82,6 +83,7 @@ app.use(function(req, res, next) {
   next(err);
 });
 
+
 /*app.use(function(req, res, next){
     var flag = false;
     //if(req.headers.origin === "http://koodain.herokuapp.com"){
@@ -134,5 +136,66 @@ app.use(function(err, req, res, next) {
   });
 });
 
+function pingDevicePromise(device){
+  return rp.get({url: device.url, simple: false})
+    .then(function(res){
+      device.status = 'active';
+      return device;
+    })
+    .catch(function(err){
+      device.status = 'passive';
+      return device;
+    });
+}
+
+function getAllDevices() {
+  return new Promise(function (resolve, reject){
+    db.collection('device').find({}).toArray(function(err, devs){
+      if(err){
+        return reject(err)
+      } else {
+        resolve(devs);
+      }
+    });
+  });
+}
+
+function updateDevice(device){
+  return new Promise( function(reject, resolve) {
+    var query = {'_id': mongo.helper.toObjectID(device._id)};
+    var update = {'$set': {'status': device.status} };
+    var options = {returnOriginal: false};
+    //console.log('1:');
+    //console.log(device._id);
+    //db.collection('device').find(query).toArray(function(err, dev){
+    //db.collction('device').findOneAndUpdate(query, update, options, function(err, res){
+    db.collection('device').update(query, update, function(err, res){
+      if(err){
+        return reject(err);
+      } else {
+        //console.log('2:');
+        //console.log(res);
+        resolve(res);
+      }
+    });
+  });
+}
+
+setInterval(function(){
+  getAllDevices()
+    .then(function(devs){
+      Promise.all(devs.map(pingDevicePromise))
+        .then(function(updatedDevs){
+          Promise.all(updatedDevs.map(updateDevice))
+            .then(function(res){
+            })
+            .catch(function(err){
+            });
+        });
+    })
+    .catch(function(err){
+      console.log(err);
+    });
+}, 10000);
 
 module.exports = app;
