@@ -19,7 +19,7 @@ var mongo = require('mongoskin');
 //var monk = require('monk');
 //var db = mongo.db("mongodb://dbuser:dbpassword@ds047911.mongolab.com:47911/device", {native_parser:true});
 // get mongodb url from environment variable or try localhost
-var mongoURL = process.env.mongourl || 'mongodb://localhost/dms';
+var mongoURL = process.env.MONGO_DB_URL || 'mongodb://localhost/dms';
 var db = mongo.db( mongoURL, {native_parser:true});
 
 var devices = require('./routes/index');
