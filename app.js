@@ -7,7 +7,13 @@
  * Otto Hylli <otto.hylli@tut.fi>
  */
 
+var MongoClient = require('mongodb').MongoClient;
+var mongoURL = process.env.mongourl || 'mongodb://localhost/dms';
 var express = require('express');
+var app = express();
+
+MongoClient.connect(mongoURL).then(function(db){
+
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -15,19 +21,17 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var rp = require('request-promise');
 
+
 var mongo = require('mongoskin');
-//var monk = require('monk');
-//var db = mongo.db("mongodb://dbuser:dbpassword@ds047911.mongolab.com:47911/device", {native_parser:true});
-// get mongodb url from environment variable or try localhost
-var mongoURL = process.env.mongourl || 'mongodb://localhost/dms';
-var db = mongo.db( mongoURL, {native_parser:true});
+//var db = mongo.db( mongoURL, {native_parser:true});
+
+console.log(mongoURL);
 
 var devices = require('./routes/index');
 var interfaces = require( './routes/interfaces' );
 var orchestration = require( './routes/orchestration' );
 var devcap = require( './routes/devicecapabilities' ).router;
 
-var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -41,8 +45,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 app.use(function(req, res, next){
+
     req.db = db;
+    //req.db1 = db1;
     var flag = false;
     //if(req.headers.origin === "http://koodain.herokuapp.com"){
     if(req.headers.origin){
@@ -66,8 +73,6 @@ app.use(function(req, res, next){
     } else {
       next();
     }
-
-    //next();
 });
 
 app.use('/', devices );
@@ -82,35 +87,6 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
-
-
-/*app.use(function(req, res, next){
-    var flag = false;
-    //if(req.headers.origin === "http://koodain.herokuapp.com"){
-    if(req.headers.origin){
-      res.header('Access-Control-Allow-Origin', req.headers.origin);
-      flag = true;
-    }
-    if(req.headers['access-control-request-method']) {
-        res.header('Access-Control-Allow-Methods', req.headers['access-control-request-method']);
-        flag = true;
-    }
-    if(req.headers['access-control-request-headers']) {
-        res.header('Access-Control-Allow-Headers', req.headers['access-control-request-headers']);
-        flag = true;
-    }
-    if(flag) {
-        res.header('Access-Control-Max-Age', 60 * 60 * 24 * 365);
-    }
-
-    if(flag && req.method === "OPTIONS"){
-      res.sendStatus(200);
-    } else {
-      next();
-    }
-
-});*/
-
 
 // error handlers
 
@@ -197,5 +173,12 @@ setInterval(function(){
       console.log(err);
     });
 }, 10000);
+    
+
+})
+.catch(function(err){
+    console.log(err.toString());
+});
 
 module.exports = app;
+

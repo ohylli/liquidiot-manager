@@ -12,7 +12,7 @@
     "express": "~4.13.1",
     "jade": "~1.11.0",
     "lodash": "^4.0.0",
-    "mongodb": "^2.0.50",
+    "mongodb": "^2.2.28",
     "mongoskin": "^2.0.3",
     "morgan": "~1.6.1",
     "request": "^2.72.0",

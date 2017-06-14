@@ -18,6 +18,106 @@ var toObjectID = mongo.helper.toObjectID;
 
 // Gets the list of devices.
 // can be filtered with a device selector string as a query parameter named q
+router.get('/newquery', function(req, res) {
+    var db = req.db;
+    var queries = [];
+
+    var operations = {
+        or: 'or',
+	and: 'and'
+    };
+
+    var operation = operations.and;
+
+    if(req.query.operation == operations.or) {
+	operation = operations.or;
+    }
+    
+    var resultType = "devs";
+    
+    if(req.query.resulttype){
+        var resultType = req.query.resulttype;
+    }
+
+
+    //var devQuery = req.query.device || req.query.q;
+    //var dbQuery = {}; // mongo db query for getting the devices
+    // if the request has a query parameter containing a device selector string
+    // parse it into a mongodb query
+    var devQuery = null;
+    if ( req.query.device ) {
+       try {
+          devQuery = css2mongo( req.query.device );
+	  console.log(devQuery);
+	  queries.push(devQuery);
+       }
+       
+       catch ( error ) {
+          res.status( 400 ).send( { 'message': 'device selector query parsing failed: ' +error } );
+          return;
+       }
+   }
+   
+   var q = null; // app specific query part of the mongodb query for devices
+   // if we have an app query selector parse it in to mongodb query
+   if ( req.query.app ) {
+       try {
+	  //var appQuery = {};
+          q = css2mongo( req.query.app, true );
+          // add the app query as an elemmath query
+          var appQuery = { apps: { $elemMatch: q } };
+	  console.log(appQuery);
+	  queries.push(appQuery);
+       }
+       
+       catch ( error ) {
+          res.status( 400 ).send( { 'message': 'app selector query parsing failed: ' +error } );
+          return;
+       }
+       
+   }
+
+    var dbQuery = {};
+    if(queries.length === 1){
+        dbQuery = queries[0];
+    } else if (queries.length === 2) {
+	if(operation == operations.or) {
+            dbQuery = {$or: queries};
+	} else {
+	    queries[0].apps = queries[1].apps;
+	    dbQuery = queries[0];
+	}
+    }
+       console.log(  dbQuery );
+   
+    db.collection('device').find( dbQuery ).toArray(function(err, items){
+        if(err){
+            res.status(400).send(err.toString());
+        } else {
+            if(resultType === "devs"){    
+	        res.status(200).send(items);
+            } else if (resultType === "apps") {
+                var apps = [];
+                _.each( items, function ( device ) {
+                    if(q){
+                        console.log('in q');
+		        apps.push.apply(apps, sift( q, device.apps ));
+                    } else {
+                        console.log('not in q');
+                        apps.push.apply(apps, device.apps);
+                    }
+                    console.log(apps);
+		});	
+	        res.status(200).send(apps);
+            } else {
+                res.status(400).send(new Error('the result type is not supported. It should be either devs or apps.').toString());
+            }
+        }
+    });
+});
+
+// Gets the list of devices.
+// can be filtered with a device selector string as a query parameter named q
 router.get('/', function(req, res) {
     var db = req.db;
     var queries = [];
@@ -91,48 +191,9 @@ router.get('/', function(req, res) {
 	    var devIds = [];
 
 	    if(devQuery) {
-	    	/*db.collection('device').find( devQuery ).toArray(function(err, devs){
-		    if(err){
-		    	res.status(400).send(err.toString());
-		    } else {
-
-			//console.log(devs);
-			devIds = devs.map(function(dev){
-			    return dev._id.toString();
-			});
-			//console.log(devIds);
-			
-
-		        if ( q ) {
-		    	    _.each( items, function ( device ) {
-			        if(devIds.indexOf(device._id.toString()) === -1){
-				    device.isQueried = false;
-			        } else {
-				    device.isQueried = true;
-			        }
-			        device.matchedApps = sift( q, device.apps );
-			    });
-		        }
-            
-                        res.status(200).send( items );
-		    }
-	    	});*/
-			
-			/*var devs = sift(devQuery, items);
-			
-			devIds = devs.map(function(dev){
-			    return dev._id.toString();
-			});*/
-			
-
 		        if ( q ) {
 		    	    _.each( items, function ( device ) {
 				device.isQueried = sift(devQuery, [device]).length == 1 ? true : false;
-			        /*if(devIds.indexOf(device._id.toString()) === -1){
-				    device.isQueried = false;
-			        } else {
-				    device.isQueried = true;
-			        }*/
 			        device.matchedApps = sift( q, device.apps );
 			    });
 		        }
