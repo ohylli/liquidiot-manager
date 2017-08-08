@@ -7,6 +7,8 @@
  * Otto Hylli <otto.hylli@tut.fi>
  */
 
+'use strict'
+
 var url = require( 'url' ); 
 var express = require('express');
 var sift = require( 'sift' );
@@ -24,18 +26,59 @@ router.get('/', function(req, res) {
   var db = req.arango.db;
   var collection = req.arango.collection;
 
-  db.query(aqlQuery`
-    FOR device IN devices
-      RETURN device
-    `)
-    .then(function(docs){
-      res.status(200).send(docs._result);
-    })
-    .catch(function(err){
-      console.error(err);
-      res.status(400).send( { 'message': err.toString() } );
-    });
+  var devQuery = req.query.device;
 
+  console.log(devQuery);
+
+  if(!devQuery){
+    devQuery = "FOR device IN devices RETURN device";
+  }
+  
+    db.query(devQuery)
+      .then(function(docs){
+        res.status(200).send(docs._result);
+      })
+      .catch(function(err){
+        console.log('salam: ' + err.toString());
+        res.status(400).send( { 'message': err.toString() } );
+      });
+
+  /*if(devQuery){
+
+    var devIds = devQuery
+      .split(',')
+      .map(function(id){
+        return id.substring(1);
+      })
+  
+    console.log(devQuery);
+
+    db.query(aqlQuery`
+      FOR device IN devices
+        FILTER device._key IN ${devIds}
+        RETURN device
+      `)
+      .then(function(docs){
+        res.status(200).send(docs._result);
+      })
+      .catch(function(err){
+        console.error(err);
+        res.status(400).send( { 'message': err.toString() } );
+      });
+  } else {
+
+    db.query(aqlQuery`
+      FOR device IN devices
+        RETURN device
+      `)
+      .then(function(docs){
+        res.status(200).send(docs._result);
+      })
+      .catch(function(err){
+        console.log('salam: ' + err.toString());
+        res.status(400).send( { 'message': err.toString() } );
+      });
+  }*/
 
 });
 
@@ -150,6 +193,7 @@ router.post('/', function(req, res){
     
   console.log(typeof(req.body) + " : " + JSON.stringify(req.body));
   var device = req.body;
+  //device.apps = [];
   device.classes = []; // an array for device classes
     
   // go through the connected devices if any and add
@@ -174,7 +218,7 @@ router.post('/', function(req, res){
       }
     });
   }
-  collection.save(req.body)
+  collection.save(device)
     .then(function(meta){
       console.log(meta._key);
       //next();
@@ -265,13 +309,16 @@ router.post( '/:id/apps', function ( req, res ) {
   var devId = req.params.id.toString();
 
   db.query(aqlQuery`
-    UPDATE ${devId} WITH {
-      apps: ${req.body}
-    } in devices
-    RETURN NEW
+    FOR device IN devices
+      FILTER device._key == ${devId}
+        UPDATE device WITH {apps: HAS(device, "apps") ? PUSH(device.apps[*], ${req.body}) : [${req.body}]} IN devices
+        RETURN NEW
     `)
-    .then(function(doc){
-      res.status(200).send(doc._result[0]);
+    .then(function(result){
+      if(result._result.length == 0){
+        throw new Error('Ther is no device or app with the given ids');
+      }
+      res.status(200).send(result._result[0]);
     })
     .catch(function(err){
       res.status(400).send( { 'message': err.toString() } );

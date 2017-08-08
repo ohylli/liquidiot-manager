@@ -51,6 +51,7 @@ arangoDB.listDatabases()
     var cookieParser = require('cookie-parser');
     var bodyParser = require('body-parser');
     var rp = require('request-promise');
+    var aqlQuery = require('arangojs').aqlQuery;
 
     var mongo = require('mongoskin');
     //var monk = require('monk');
@@ -157,7 +158,14 @@ arangoDB.listDatabases()
     }
 
     function getAllDevices() {
-      return new Promise(function (resolve, reject){
+      return arangoDB.query(aqlQuery`
+          FOR device IN devices
+            RETURN device
+          `)
+          .then(function(result){
+            return result._result;
+          });
+      /*return new Promise(function (resolve, reject){
         db.collection('device').find({}).toArray(function(err, devs){
           if(err){
             return reject(err)
@@ -165,11 +173,24 @@ arangoDB.listDatabases()
             resolve(devs);
           }
         });
-      });
+      });*/
     }
 
     function updateDevice(device){
-      return new Promise( function(reject, resolve) {
+      console.log('sssssssssssssssssssssssssssssssss: ' + device._key);
+        
+      return arangoDB.query(aqlQuery`
+        UPDATE ${device._key} WITH {status: ${device.status}} IN devices
+        RETURN NEW
+        `)
+        .then(function(res){
+          return res._result;
+        })
+        .catch(function(err){
+          return err;
+        });
+
+      /*return new Promise( function(reject, resolve) {
         var query = {'_id': mongo.helper.toObjectID(device._id)};
         var update = {'$set': {'status': device.status} };
         var options = {returnOriginal: false};
@@ -186,18 +207,18 @@ arangoDB.listDatabases()
             resolve(res);
           }
         });
-      });
+      });*/
     }
 
     setInterval(function(){
       getAllDevices()
         .then(function(devs){
+          //console.log(devs);
           Promise.all(devs.map(pingDevicePromise))
             .then(function(updatedDevs){
               Promise.all(updatedDevs.map(updateDevice))
                 .then(function(res){
-                })
-                .catch(function(err){
+                  //console.log(res);
                 });
             });
         })
