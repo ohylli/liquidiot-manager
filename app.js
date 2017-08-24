@@ -11,7 +11,8 @@ var arangoDB = require('arangojs')('http://127.0.0.1:3000');
 arangoDB.useBasicAuth('root','admin');
 
 var dbName = "liquidiot-dev";
-var collectionName = "devices";
+var deviceCollection = "devices";
+var apiCollection = "interfaces";
 
 var express = require('express');
 var app = express();
@@ -33,17 +34,29 @@ arangoDB.listDatabases()
     info = info.map(function(col){
       return col.name;
     });
-    var collection = arangoDB.collection(collectionName);
-    var colExists = (info.indexOf(collectionName) == -1) ? false : true;
+    var devsCol = arangoDB.collection(deviceCollection);
+    var colExists = (info.indexOf(deviceCollection) == -1) ? false : true;
     if(colExists){
-      return collection;
+      return { info: info, devices: devsCol};
     } else {
-      return collection.create().then(function(){
-        return collection;
+      return devsCol.create().then(function(){
+        return { info: info, devices: devsCol};
       });
     }
   })
-  .then(function(collection){
+  .then(function(collections){
+    console.log(collections.info);
+    var apiCol = arangoDB.collection(apiCollection);
+    var colExists = (collections.info.indexOf(apiCollection) == -1) ? false : true;
+    if(colExists){
+      return {interfaces: apiCol, devices: collections.devices};
+    } else {
+      return apiCol.create().then(function(){
+        return {interfaces: apiCol, devices: collections.devices};
+      });
+    }
+  })
+  .then(function(collections){
 
     var path = require('path');
     var favicon = require('serve-favicon');
@@ -80,7 +93,7 @@ arangoDB.listDatabases()
 
     app.use(function(req, res, next){
         req.db = db;
-        req.arango = {db: arangoDB, collection: collection}
+        req.arango = {db: arangoDB, collections: collections}
         var flag = false;
         //if(req.headers.origin === "http://koodain.herokuapp.com"){
         if(req.headers.origin){

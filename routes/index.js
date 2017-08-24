@@ -24,7 +24,7 @@ var aqlQuery = require('arangojs').aqlQuery;
 router.get('/', function(req, res) {
 
   var db = req.arango.db;
-  var collection = req.arango.collection;
+  var collection = req.arango.collections.devices;
 
   var devQuery = req.query.device;
 
@@ -189,7 +189,7 @@ router.get('/', function(req, res) {
 router.post('/', function(req, res){
     
   var db = req.arango.db;
-  var collection = req.arango.collection;
+  var collection = req.arango.collections.devices;
     
   console.log(typeof(req.body) + " : " + JSON.stringify(req.body));
   var device = req.body;
@@ -276,7 +276,7 @@ router.post('/', function(req, res){
 router.get('/id/:id', function(req, res){
 
   var db = req.arango.db;
-  var collection = req.arango.collection;
+  var collection = req.arango.collections.devices;
 
   collection.document(req.params.id.toString())
     .then(function(doc){
