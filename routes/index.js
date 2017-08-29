@@ -66,7 +66,6 @@ router.get('/newquery', function(req, res) {
           q = css2mongo( req.query.app, true );
           // add the app query as an elemmath query
           var appQuery = { apps: { $elemMatch: q } };
-	  console.log(appQuery);
 	  queries.push(appQuery);
        }
        
@@ -75,6 +74,7 @@ router.get('/newquery', function(req, res) {
           return;
        }
        
+       //console.log( JSON.stringify( dbQuery ));
    }
 
     var dbQuery = {};
@@ -191,15 +191,32 @@ router.get('/', function(req, res) {
 	    var devIds = [];
 
 	    if(devQuery) {
+	    	db.collection('device').find( devQuery ).toArray(function(err, devs){
+		    if(err){
+		    	res.status(400).send(err.toString());
+		    } else {
+
+			console.log(devs);
+			devIds = devs.map(function(dev){
+			    return dev._id.toString();
+			});
+			console.log(devIds);
+			
+
 		        if ( q ) {
 		    	    _.each( items, function ( device ) {
-				device.isQueried = sift(devQuery, [device]).length == 1 ? true : false;
+			        if(devIds.indexOf(device._id.toString()) === -1){
+				    device.isQueried = false;
+			        } else {
+				    device.isQueried = true;
+			        }
 			        device.matchedApps = sift( q, device.apps );
 			    });
 		        }
             
                         res.status(200).send( items );
-		    
+		    }
+	    	});
 	    } else {
 	    
 		// if we had an app query for each device add a new attribute to the returned document
