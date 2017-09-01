@@ -8,7 +8,8 @@
  */
 
 var MongoClient = require('mongodb').MongoClient;
-var mongoURL = process.env.mongourl || 'mongodb://localhost/dms';
+var mongoURL = process.env.MONGO_DB_URL || 'mongodb://localhost/dms';
+//var mongoURL = process.env.mongourl || 'mongodb://localhost/dms';
 var express = require('express');
 var app = express();
 
