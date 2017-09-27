@@ -39,151 +39,9 @@ router.get('/', function(req, res) {
         res.status(200).send(docs._result);
       })
       .catch(function(err){
-        //console.log('salam: ' + err.toString());
         res.status(400).send( { 'message': err.toString() } );
       });
-
-  /*if(devQuery){
-
-    var devIds = devQuery
-      .split(',')
-      .map(function(id){
-        return id.substring(1);
-      })
-  
-    console.log(devQuery);
-
-    db.query(aqlQuery`
-      FOR device IN devices
-        FILTER device._key IN ${devIds}
-        RETURN device
-      `)
-      .then(function(docs){
-        res.status(200).send(docs._result);
-      })
-      .catch(function(err){
-        console.error(err);
-        res.status(400).send( { 'message': err.toString() } );
-      });
-  } else {
-
-    db.query(aqlQuery`
-      FOR device IN devices
-        RETURN device
-      `)
-      .then(function(docs){
-        res.status(200).send(docs._result);
-      })
-      .catch(function(err){
-        console.log('salam: ' + err.toString());
-        res.status(400).send( { 'message': err.toString() } );
-      });
-  }*/
-
 });
-
-
-// Gets the list of devices.
-// can be filtered with a device selector string as a query parameter named q
-/*router.get('/', function(req, res) {
-    var db = req.db;
-    var queries = [];
-
-    var operations = {
-        or: 'or',
-	and: 'and'
-    };
-
-    var operation = operations.and;
-
-    if(req.query.operation == operations.or) {
-	operation = operations.or;
-    }
-
-
-    //var devQuery = req.query.device || req.query.q;
-    //var dbQuery = {}; // mongo db query for getting the devices
-    // if the request has a query parameter containing a device selector string
-    // parse it into a mongodb query
-    var devQuery = null;
-    if ( req.query.device ) {
-       try {
-          devQuery = css2mongo( req.query.device );
-	  console.log(devQuery);
-	  queries.push(devQuery);
-       }
-       
-       catch ( error ) {
-          res.status( 400 ).send( { 'message': 'device selector query parsing failed: ' +error } );
-          return;
-       }
-   }
-   
-   var q = null; // app specific query part of the mongodb query for devices
-   // if we have an app query selector parse it in to mongodb query
-   if ( req.query.app ) {
-       try {
-	  //var appQuery = {};
-          q = css2mongo( req.query.app, true );
-          // add the app query as an elemmath query
-          var appQuery = { apps: { $elemMatch: q } };
-	  console.log(appQuery);
-	  queries.push(appQuery);
-       }
-       
-       catch ( error ) {
-          res.status( 400 ).send( { 'message': 'app selector query parsing failed: ' +error } );
-          return;
-       }
-       
-   }
-
-    var dbQuery = {};
-    if(queries.length === 1){
-        dbQuery = queries[0];
-    } else if (queries.length === 2) {
-	if(operation == operations.or) {
-            dbQuery = {$or: queries};
-	} else {
-	    queries[0].apps = queries[1].apps;
-	    dbQuery = queries[0];
-	}
-    }
-       console.log(  dbQuery );
-   
-    db.collection('device').find( dbQuery ).toArray(function(err, items){
-        if(err){
-            res.status(400).send(err.toString());
-        } else {
-	    var devIds = [];
-
-	    if(devQuery) {
-
-		        if ( q ) {
-		    	    _.each( items, function ( device ) {
-				device.isQueried = sift(devQuery, [device]).length == 1 ? true : false;
-			        device.matchedApps = sift( q, device.apps );
-			    });
-		        }
-            
-                        res.status(200).send( items );
-		    
-	    } else {
-	    
-		// if we had an app query for each device add a new attribute to the returned document
-		// that will contain only those apps that matched the query
-		if ( q ) {
-		    _.each( items, function ( device ) {
-		        device.isQueried = false;
-		    	device.matchedApps = sift( q, device.apps );
-		    });
-	        }
-		    
-	        res.status(200).send( items );
-	    }
-        }
-    });
-});*/
 
 // add a device
 router.post('/', function(req, res){
@@ -232,46 +90,6 @@ router.post('/', function(req, res){
     });
 });
 
-// add a device
-/*router.post('/', function(req, res){
-    var db = req.db;
-    console.log(typeof(req.body) + " : " + JSON.stringify(req.body));
-    var device = req.body;
-    device.classes = []; // an array for device classes
-    
-    // go through the connected devices if any and add
-    // classes that correspond to the device type e.g. if device has a speaker
-    // add clas canPlaySound.
-    // also add connected device's information as attributes
-    // for example if speaker has a model adds that as an attribute named speaker-model
-    if ( device['connectedDevices'] ) {
-       _.each( device['connectedDevices'], function ( deviceAttrs, deviceType ) {
-          // contains the mapping information between device types and classes
-          var deviceType2class = {
-             speaker: 'canPlaySound',
-             tempSensor: 'canMeasureTemperature',
-	     led : 'canTurnLight'
-          };
-          
-          if ( deviceType2class[deviceType] ) {
-             device.classes.push( deviceType2class[deviceType] );
-             _.each( deviceAttrs, function ( value, deviceAttrName ) {
-                device[ deviceType +'-' +deviceAttrName ] = value;
-             });
-          }
-       });
-    }
-    
-    db.collection('device').insert(req.body, function(err, result){
-        if(err){
-            res.status(400).send(err.toString());
-        } else {
-            console.log(result.insertedIds[0]);
-            res.status(200).send(JSON.stringify(result.insertedIds[0]));
-        }
-    });
-});*/
-
 // get a device specified with its id
 // This api does not use AQL query
 router.get('/id/:id', function(req, res){
@@ -289,18 +107,6 @@ router.get('/id/:id', function(req, res){
       res.status(400).send(err.toString());
     });
 });
-
-/*router.get('/id/:id', function(req, res){
-    var db = req.db;
-    db.collection('device').findById(req.params.id.toString(), function(err, item){
-        if(err){
-            res.status(400).send(err.toString());
-        } else {
-            console.log(typeof(item) + " : " + item);
-            res.status(200).send(JSON.stringify(item));
-        } 
-    });
-});*/
 
 // adds the app information in the requests body to the specified device's apps list.
 // This api uses AQL query
@@ -325,38 +131,7 @@ router.post( '/:id/apps', function ( req, res ) {
       res.status(400).send( { 'message': err.toString() } );
     });
 
-  /*var collection = req.arango.collection;
-
-  var queryStr = "update";
-
-  collection.update(req.params.id.toString(), {apps: req.body})
-    .then()
-    .catch();*/
 });
-
-// adds the app information in the requests body to the specified device's apps list.
-/*router.post( '/:id/apps', function ( req, res ) {
-    var db = req.db;
-    var query = { '_id': toObjectID( req.params.id ) };
-    var update = { '$push': { 'apps': req.body } };
-    var options = { returnOriginal: false };
-    db.collection( 'device' ).findOneAndUpdate( query, update, options, function ( err, result ) {
-        if ( err ) {
-            res.status( 500 ).send( err );
-            return;
-        }
-        
-        if ( result.lastErrorObject.n == 0 ) {
-            return res.status( 404).send( { 'message': 'Device with id ' +req.params.id +' not found.' } );
-        }
-        
-        if ( !result.lastErrorObject.updatedExisting ) {
-            return res.status( 500 ).send( { 'message': 'Device found but update failed.' } );
-        }
-        
-        res.send( result.value );
-    });
-});*/
 
 // deletes the app with the given id from the app list of the specified device
 router.delete( '/:devid/apps/:appid', function ( req, res ) {
@@ -384,29 +159,6 @@ router.delete( '/:devid/apps/:appid', function ( req, res ) {
     });
 });
 
-// deletes the app with the given id from the app list of the specified device
-/*router.delete( '/:devid/apps/:appid', function ( req, res ) {
-    var db = req.db;
-    var query = { '_id': toObjectID( req.params.devid ), 'apps.id': Number( req.params.appid ) };
-    var update = { '$pull': { 'apps': { 'id': Number( req.params.appid ) } } };
-    var options = { returnOriginal: false };
-    db.collection( 'device' ).findOneAndUpdate( query, update, options, function ( err, result ) {
-        if ( err ) {
-            res.status( 500 ).send( err );
-            return;
-        }
-        
-        if ( result.lastErrorObject.n == 0 ) {
-            return res.status( 404).send( { 'message': 'App with id ' +req.params.appid +' in device with id ' +req.params.devid +' not found.' } );
-        }
-        
-        if ( !result.lastErrorObject.updatedExisting ) {
-            return res.status( 500 ).send( { 'message': 'Device found but update failed.' } );
-        }
-        
-        res.send( result.value );
-    });
-});*/
 
 // updates the app information in the requests body to the specified device's apps list.
 // This api uses AQL query
@@ -435,31 +187,7 @@ router.put( '/:devid/apps/:appid', function ( req, res ) {
     });
 });
 
-// updates the app information in the requests body to the specified device's apps list.
-/*router.put( '/:devid/apps/:appid', function ( req, res ) {
-    var db = req.db;
-    var query = { '_id': toObjectID( req.params.devid ), 'apps.id': Number( req.params.appid ) };
-    var update = { '$set': { 'apps.$': req.body } };
-    var options = { returnOriginal: false };
-    db.collection( 'device' ).findOneAndUpdate( query, update, options, function ( err, result ) {
-        if ( err ) {
-            res.status( 500 ).send( err );
-            return;
-        }
-        
-        if ( result.lastErrorObject.n == 0 ) {
-            return res.status( 404).send( { 'message': 'App with id ' +req.params.appid +' in device with id ' +req.params.devid +' not found.' } );
-        }
-        
-        if ( !result.lastErrorObject.updatedExisting ) {
-            return res.status( 500 ).send( { 'message': 'Device found but update failed.' } );
-        }
-        
-        res.send( result.value );
-    });
-});*/
-
-
+// TO DO: it is not yet converted to use arango db
 // get a api description for an app running on a device
 router.get( '/:devid/apps/:appid/api', function ( req, res ) {
     var db = req.db;
@@ -535,6 +263,7 @@ function buildApiDesc( device, app, interfaces ) {
     return api;
 }
 
+// TO DO: it is not yet converted to use arango db
 router.get("/functionality?", function(req, res){
     var db = req.db;
     var tempSensor = req.query.tempSensor;
