@@ -39,7 +39,7 @@ router.get('/', function(req, res) {
         res.status(200).send(docs._result);
       })
       .catch(function(err){
-        console.log('salam: ' + err.toString());
+        //console.log('salam: ' + err.toString());
         res.status(400).send( { 'message': err.toString() } );
       });
 
@@ -207,7 +207,8 @@ router.post('/', function(req, res){
       var deviceType2class = {
         speaker: 'canPlaySound',
         tempSensor: 'canMeasureTemperature',
-        led : 'canTurnLight'
+        led : 'canTurnLight',
+        fireDetector: 'canDetectFire'
       };
         
       if ( deviceType2class[deviceType] ) {

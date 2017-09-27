@@ -20,10 +20,14 @@ var devcaps = [
                    name: 'canMeasureTemperature',
                    description: 'The device has a temperature sensor that can be used to measure temperature.'
                },
-	       {
-		   name: 'canTurnLight',
-		   description: 'The device has an led that can be used to turn on or tuen off a light'
-	       }
+               {
+		               name: 'canTurnLight',
+		               description: 'The device has an led that can be used to turn on or tuen off a light'
+	             },
+               {
+		               name: 'canDetectFire',
+		               description: 'The device has a fire detector that can be used detect fire'
+	             }
               ];
 
 // get available device capabilities

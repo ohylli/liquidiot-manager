@@ -19,7 +19,7 @@ var app = express();
 
 arangoDB.listDatabases()
   .then(function(info){
-    console.log(info);
+    //console.log(info);
     var dbExists = (info.indexOf(dbName) == -1) ? false : true;
     if(!dbExists){
       return arangoDB.createDatabase(dbName);
@@ -30,7 +30,7 @@ arangoDB.listDatabases()
     return arangoDB.listCollections();
   })
   .then(function(info){
-    console.log(info);
+   // console.log(info);
     info = info.map(function(col){
       return col.name;
     });
@@ -45,7 +45,7 @@ arangoDB.listDatabases()
     }
   })
   .then(function(collections){
-    console.log(collections.info);
+    //console.log(collections.info);
     var apiCol = arangoDB.collection(apiCollection);
     var colExists = (collections.info.indexOf(apiCollection) == -1) ? false : true;
     if(colExists){
@@ -86,8 +86,10 @@ arangoDB.listDatabases()
     // uncomment after placing your favicon in /public
     //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
     app.use(logger('dev'));
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(bodyParser.json({limit:'50mb'}));
+    app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+    //app.use(bodyParser.json());
+    //app.use(bodyParser.urlencoded({ extended: false }));
     app.use(cookieParser());
     app.use(express.static(path.join(__dirname, 'public')));
 
@@ -190,7 +192,7 @@ arangoDB.listDatabases()
     }
 
     function updateDevice(device){
-      console.log('sssssssssssssssssssssssssssssssss: ' + device._key);
+      //console.log('sssssssssssssssssssssssssssssssss: ' + device._key);
         
       return arangoDB.query(aqlQuery`
         UPDATE ${device._key} WITH {status: ${device.status}} IN devices
@@ -236,13 +238,13 @@ arangoDB.listDatabases()
             });
         })
         .catch(function(err){
-          console.log(err);
+          //console.log(err);
         });
     }, 10000);
 
   })
   .catch(function(err){
-    console.error(err);
+    //console.error(err);
   });
 
 module.exports = app;
