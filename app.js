@@ -7,7 +7,9 @@
  * Otto Hylli <otto.hylli@tut.fi>
  */
 
-var arangoDB = require('arangojs')('http://127.0.0.1:3000');
+var arangoDbUrl = process.env.ARANGO_DB_URL || 'http://127.0.0.1:3000';
+
+var arangoDB = require('arangojs')(arangoDbUrl);
 arangoDB.useBasicAuth('root','admin');
 
 var dbName = "liquidiot-dev";
