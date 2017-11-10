@@ -28,7 +28,7 @@ router.get('/', function(req, res) {
 
   var devQuery = req.query.device;
 
-  console.log(devQuery);
+  //console.log(devQuery);
 
   if(!devQuery){
     devQuery = "FOR device IN devices RETURN device";
@@ -49,7 +49,7 @@ router.post('/', function(req, res){
   var db = req.arango.db;
   var collection = req.arango.collections.devices;
     
-  console.log(typeof(req.body) + " : " + JSON.stringify(req.body));
+  //console.log(typeof(req.body) + " : " + JSON.stringify(req.body));
   var device = req.body;
   //device.apps = [];
   device.classes = []; // an array for device classes
@@ -79,7 +79,7 @@ router.post('/', function(req, res){
   }
   collection.save(device)
     .then(function(meta){
-      console.log(meta._key);
+      //console.log(meta._key);
       //next();
       res.status(200).send(meta._key);
     })
@@ -99,7 +99,7 @@ router.get('/id/:id', function(req, res){
 
   collection.document(req.params.id.toString())
     .then(function(doc){
-      console.log(typeof(doc) + " : " + doc);
+      //console.log(typeof(doc) + " : " + doc);
       res.status(200).send(JSON.stringify(doc));
     })
     .catch(function(err){
@@ -267,7 +267,7 @@ function buildApiDesc( device, app, interfaces ) {
 router.get("/functionality?", function(req, res){
     var db = req.db;
     var tempSensor = req.query.tempSensor;
-    console.log(tempSensor);
+    //console.log(tempSensor);
     var speaker = req.query.speaker;
     var qs = "";
     if(tempSensor && speaker){
@@ -280,7 +280,7 @@ router.get("/functionality?", function(req, res){
         //qs = {"connected-devices": {"temp-sensor": {"model": tempSensor}, "speaker": {"model": speaker} } };
         qs = {};
     }
-    console.log(JSON.stringify(qs));
+    //console.log(JSON.stringify(qs));
     //var a = f.split(' ');
     //var qs = { $in : };
     //for(var i in a){
