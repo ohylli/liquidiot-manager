@@ -159,6 +159,28 @@ router.delete( '/:devid/apps/:appid', function ( req, res ) {
     });
 });
 
+// deletes the device with the given id from the app list of the specified device
+router.delete( '/:devname', function ( req, res ) {
+  
+  var db = req.arango.db;
+  var devName = req.params.devname;
+  //var appId = parseInt(req.params.appid);
+
+  db.query(aqlQuery`
+    FOR device IN devices
+      FILTER device.name == ${devName}
+      REMOVE device IN devices RETURN OLD
+    `)
+    .then(function(result){
+      if(result._result.length == 0){
+        throw new Error('Ther is no device or app with the given name');
+      }
+      res.status(200).send(result._result[0]);
+    })
+    .catch(function(err){
+      res.status(400).send( { 'message': err.toString() } );
+    });
+});
 
 // updates the app information in the requests body to the specified device's apps list.
 // This api uses AQL query
