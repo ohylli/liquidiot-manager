@@ -8,6 +8,7 @@
  */
 
 var arangoDbUrl = process.env.ARANGO_DB_URL || 'http://127.0.0.1:3000';
+//var arangoDbUrl = 'http://newarangodb-siotad.paas.msv-project.com';
 
 var arangoDB = require('arangojs')(arangoDbUrl);
 arangoDB.useBasicAuth('root','admin');
@@ -163,7 +164,8 @@ arangoDB.listDatabases()
     });
 
     function pingDevicePromise(device){
-      return rp.get({url: device.url, simple: false})
+      //return rp.get({url: device.url, simple: false})
+      return rp.get({url: device.url + '/app'})
         .then(function(res){
           device.status = 'active';
           return device;
